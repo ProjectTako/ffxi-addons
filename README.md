@@ -1,7 +1,7 @@
 # ffxi-addons  
 Some of the ffxi addons that I have made. Some are for both Windower and Ashita, and some are just for one or the other. If there is an addon made for one of them, but not the other and you are interested in having it made, feel free to contact me. You will be able to find more details about each addon in their respective folders.
 
-Summer of the addons:  
+Summary of the addons:  
   
 AllSeeingEye:  
 This was popularized long ago from the Windower 3.x plugin with the same name. Since the release of Windower v4, the Windower team has not provided an alternative, so I have. This one is simple to use. You load it, it's on. You unload it, it's off.  
