@@ -24,7 +24,7 @@ local cancel_result = 0x40000000;
 local cancel_result_seq = string.char(0x00, 0x00, 0x00, 0x40);
 
 ---------------------------------------------------------------------------------------------------
--- func: count_cells
+-- func: cell_count
 -- desc: Loops through the players inventory storage and counts how many cells are there
 ---------------------------------------------------------------------------------------------------
 local function cell_count()
