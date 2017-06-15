@@ -27,7 +27,7 @@ local cancel_result_seq = string.char(0x00, 0x00, 0x00, 0x40);
 -- func: count_cells
 -- desc: Loops through the players inventory storage and counts how many cells are there
 ---------------------------------------------------------------------------------------------------
-local function count_cells()
+local function cell_count()
 	-- get the players inventory
 	local inventory = AshitaCore:GetDataManager():GetInventory();
 	-- cell counts
@@ -35,7 +35,7 @@ local function count_cells()
 	local rubicund_count = 0;
 
 	-- loop through inventory and check for cells
-	for index = 1, inventoy:GetContainerMax(0), 1 do
+	for index = 1, inventory:GetContainerMax(0), 1 do
 		-- get inventory item at index
 		local item = inventory:GetItem(0, index);
 
@@ -258,7 +258,7 @@ ashita.register_event('outgoing_packet', function(id, size, packet)
 					return true;
 				elseif (rubicund_needed > 0 and settings['cells']['rubicund']['buy']) then
 					-- print to user showing how many cells we're buying.
-					print(string.format('[TakoPop] Buying %d Rubicund Cells', colbat_needed));
+					print(string.format('[TakoPop] Buying %d Rubicund Cells', rubicund_needed));
 					-- change result id to what we want.
 					-- option is apart of the third char
 					-- count is packed into the third and fourth chars
