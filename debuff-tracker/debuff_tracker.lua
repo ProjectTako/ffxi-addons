@@ -66,27 +66,27 @@ local debuff_data =
 	[375] = { name = 'Rayke', duration = 47, overwrites = {} },
 	[365] = { name = 'Breakga', duration = 30, overwrites = { } },
 	[508] = { name = 'Yurin: Ichi', duration = 90, overwrites = { } },
---  [561] = { name = 'Frightful Roar', duration = 180, overwrites = { } },
-    [572] = { name = 'Sound Blast', duration = 180, overwrites = { } },
-    [576] = { name = 'Yawn', duration = 90, overwrites = { } },
+    --  [561] = { name = 'Frightful Roar', duration = 180, overwrites = { } },
+	[572] = { name = 'Sound Blast', duration = 180, overwrites = { } },
+	[576] = { name = 'Yawn', duration = 90, overwrites = { } },
 	[584] = { name = 'Sheep Song', duration = 60, overwrites = { } },
-    [598] = { name = 'Soporific', duration = 90, overwrites = { } },
---  [659] = { name = 'Demoralizing Roar', duration = 30, overwrites = { } },
---  [660] = { name = 'Cimicine Discharge', duration = 90, overwrites = { } },
-    [678] = { name = 'Dream Flower', duration = 90, overwrites = { } },
+	[598] = { name = 'Soporific', duration = 90, overwrites = { } },
+    --  [659] = { name = 'Demoralizing Roar', duration = 30, overwrites = { } },
+    --  [660] = { name = 'Cimicine Discharge', duration = 90, overwrites = { } },
+    	[678] = { name = 'Dream Flower', duration = 90, overwrites = { } },
 	[703] = { name = 'Embalming Earth', duration = 180, overwrites = { } },
 	[705] = { name = 'Foul Waters', duration = 180, overwrites = { 235, 719 } },
-    [716] = { name = 'Nectarous Deluge', duration = 30, overwrites = { } },
-    [719] = { name = 'Searing Tempest', duration = 60, overwrites = { } },
-    [722] = { name = 'Entomb', duration = 60, overwrites = { } },
-    [723] = { name = 'Saurian Slide', duration = 60, overwrites = { } },
---  [724] = { name = 'Palling Salvo', duration = 90, overwrites = { 23, 33, 230 } },
-    [726] = { name = 'Scouring Spate', duration = 180, overwrites = { } },
-    [727] = { name = 'Silent Storm', duration = 300, overwrites = { } },
-    [728] = { name = 'Tenebral Crush', duration = 90, overwrites = { } },
-    [740] = { name = 'Tourbillion', duration = 60, overwrites = { } },
-    [752] = { name = 'Cesspool', duration = 60, overwrites = { } },
-    [753] = { name = 'Tearing Gust', duration = 60, overwrites = { } },
+	[716] = { name = 'Nectarous Deluge', duration = 30, overwrites = { } },
+	[719] = { name = 'Searing Tempest', duration = 60, overwrites = { } },
+	[722] = { name = 'Entomb', duration = 60, overwrites = { } },
+	[723] = { name = 'Saurian Slide', duration = 60, overwrites = { } },
+    --  [724] = { name = 'Palling Salvo', duration = 90, overwrites = { 23, 33, 230 } },
+	[726] = { name = 'Scouring Spate', duration = 180, overwrites = { } },
+	[727] = { name = 'Silent Storm', duration = 300, overwrites = { } },
+	[728] = { name = 'Tenebral Crush', duration = 90, overwrites = { } },
+	[740] = { name = 'Tourbillion', duration = 60, overwrites = { } },
+	[752] = { name = 'Cesspool', duration = 60, overwrites = { } },
+	[753] = { name = 'Tearing Gust', duration = 60, overwrites = { } },
 	[841] = { name = 'Distract', duration = 120, overwrites = { } },
 	[842] = { name = 'Distract II', duration = 120, overwrites = { 841 } },
 	[843] = { name = 'Frazzle', duration = 120, overwrites = { } },
@@ -102,16 +102,16 @@ local debuff_data =
 	[890] = { name = 'Ionohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	 	--
 	[891] = { name = 'Noctohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } }, 	--
 	[892] = { name = 'Luminohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } } 	--
---  [502] = { name = 'Kaustra', duration = 0, overwrites = { } },
---  [000] = { name = 'Spooky Holder', duration = 0, overwrites = { } },
+    --  [502] = { name = 'Kaustra', duration = 0, overwrites = { } },
+    --  [000] = { name = 'Spooky Holder', duration = 0, overwrites = { } },
 }, { 'name', 'duration', 'overwrites' };
 
---				local job_debuff_data =
---				{
---					[156] = { name = 'Feint', duration = 30, overwrites = {} },
---					[372] = { name = 'Gambit', duration = 92, overwrites = {} },
---					[375] = { name = 'Rayke', duration = 47, overwrites = {} },
---				}, { 'name', 'duration', 'overwrites' };
+-- local job_debuff_data =
+-- {
+--	[156] = { name = 'Feint', duration = 30, overwrites = {} },
+--	[372] = { name = 'Gambit', duration = 92, overwrites = {} },
+--	[375] = { name = 'Rayke', duration = 47, overwrites = {} },
+-- }, { 'name', 'duration', 'overwrites' };
 
 local removal_data = 
 {
@@ -210,44 +210,6 @@ ashita.register_event('load', function()
 	f:SetPositionY(100);
 	
 end);
-
-local tracked_mobs = 
-{
-	
-};
-
-local helix_tier1 =
-{
-
-};
-
-local helix_tier2 =
-{
-
-};
-
-local spell_tiers =
-{
-	[23]  = 1,
-	[24]  = 2,
-	[25]  = 3,
-	[230] = 1,
-	[231] = 2,
-	[232] = 3
-};
-
-local mob_dead = T{ 6, 20, 97, 406, 605, 646 };
-local spell_fail = T{ 85, 284, 653, 655, 656 };
-local spell_success = T{ 2, 230, 236, 237, 270, 277, 278, 279, 280, 266, 267, 268, 269, 271, 272, 320, 672 };
-local spell_debuff = T{ 23, 24, 25, 33, 56, 58, 59, 79, 80, 98, 220, 221, 225, 230, 231, 232, 235, 236, 237, 238, 239, 240, 253, 254, 255, 259, 273, 274, 276, 286, 319, 341, 344, 345, 347, 348, 364, 365, 508, 572, 841, 842, 843, 844, 882, 883, 884,  };
---local song_debuff = T{ };
-local blue_debuff = T{ 703, 705, 716, 719, 722, 723, 726, 727, 728, 740, 752, 753 };
-local spell_debuff_status = T{ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 16, 18, 19, 20, 21, 31, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 147, 								148, 149, 168, 404, 562, 564, 536, 571 };
-local spell_damage_debuff = T{ 23, 24, 25, 33, 230, 231, 232, 278, 279, 280, 281, 282, 283, 284, 285, 885, 886, 887, 888, 889, 890, 891, 892,
-								703, 705, 716, 719, 722, 723, 726, 727, 728, 740, 752, 753 };
-local helix1_debuff = T{ 278, 279, 280, 281, 282, 283, 284, 285 };
-local helix2_debuff = T{ 885, 886, 887, 888, 889, 890, 891, 892 };
-local job_debuff = T{320, 672}
 
 ---------------------------------------------------------------------------------------------------
 -- func: command
