@@ -304,7 +304,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 					local act_param = targets[x].actions[i].param;
 					local act_message = targets[x].actions[i].message_id;
 
-					-- message id 0 is KO message
+					-- Message ID 0 is No Message.
 					if (act_message > 0) then
 						-- checks to see if any of the parameters match what's in the tables defined above
 						if (spell_debuff_status:contains(act_param)) or (spell_damage_debuff:contains(act_param)) then -- Spells that deal damage use the damage as the parameter
