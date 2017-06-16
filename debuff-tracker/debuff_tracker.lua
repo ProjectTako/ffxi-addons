@@ -371,7 +371,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 	
 	-- Message ID Packet
 	if (id == 0x29) then
-	
+	end
 	return false;
 end);
 
