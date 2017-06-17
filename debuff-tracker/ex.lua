@@ -95,6 +95,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				bitOffset = bitOffset + 12;
 
 				-- get the targets special effect
+				-- this is related to melee attacks somehow
+				-- 0 = Miss/Magic | 1 = Death | 32 = Successful Melee | 34 = Critical Hit
 				targets[x].actions[i].effect = ashita.bits.unpack_be(packet, bitOffset, 7);
 				-- adjust the offset
 				bitOffset = bitOffset + 7;
@@ -118,6 +120,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				bitOffset = bitOffset + 31;
 
 				-- get if there is a subeffect. 0 = false 1 = true
+				-- this is related only en-effects like Enfire
+				-- any hidden added effects result in 0
 				targets[x].actions[i].subeffect = ashita.bits.unpack_be(packet, bitOffset, 1);
 				-- adjust the offset
 				bitOffset = bitOffset + 1;
