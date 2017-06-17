@@ -229,253 +229,149 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 	local party = AshitaCore:GetDataManager():GetParty();
 	local target = AshitaCore:GetDataManager():GetTarget();
 	
-	-- action packet
-	if (id == 0x28) then
-	
+if (id == 0x28) then
 		local actor_id = struct.unpack('I', packet, 0x04 + 1);
-	     -- if (actor_id == party:GetMemberIndex(actor_id)) then
-		if (actor_id == party:GetMemberServerId(actor_id)) then
-		
-			local target_count = struct.unpack('b', packet, 0x09 + 1);
 
-			-- holds the bitOffset for unpacking bits
-			local bitOffset = 82;
+		local target_count = struct.unpack('b', packet, 0x09 + 1);
 
-			-- unpack the action type
-			-- 82 bits in. 0x0A:0x02 = 82
-			-- action type is 4 bits wide
-			local action_type = ashita.bits.unpack_be(packet, bitOffset, 4);
+		-- holds the bitOffset for unpacking bits
+		local bitOffset = 82;
+
+		-- unpack the action type
+		-- 82 bits in. 0x0A:0x02 = 82
+		-- action type is 4 bits wide
+		local action_type = ashita.bits.unpack_be(packet, bitOffset, 4);
+		-- adjust the offset
+		bitOffset = bitOffset + 4;
+
+		-- adjust the bitOffset
+		bitOffset = bitOffset + 64;
+
+		-- create our targets table, empty
+		local targets = { };
+
+		-- loop through how many targets there are
+		for x = 1, target_count do
+			-- empty target
+			targets[x] = { };
+
+			-- get the id of the target
+			targets[x].id = ashita.bits.unpack_be(packet, bitOffset, 32);
+			-- adjust the offset
+			bitOffset = bitOffset + 32;
+
+			-- get the action count
+			targets[x].action_count = ashita.bits.unpack_be(packet, bitOffset, 4) + 1;
 			-- adjust the offset
 			bitOffset = bitOffset + 4;
 
-			-- adjust the bitOffset
-			bitOffset = bitOffset + 64;
+			-- empty actions table
+			targets[x].actions = { };
 
-			-- create our targets table, empty
-			local targets = { };
-
-			-- loop through how many targets there are
-			for x = 1, target_count do
-				-- empty target
-				targets[x] = { };
-
-				-- get the id of the target
-				targets[x].id = ashita.bits.unpack_be(packet, bitOffset, 32);
+			-- loop through the action count
+			for i = 1, targets[x].action_count do
+				targets[x].actions[i] = { };
+				-- get the targets reaction
+				targets[x].actions[i].reaction = ashita.bits.unpack_be(packet, bitOffset, 5);
 				-- adjust the offset
-				bitOffset = bitOffset + 32;
-				local target_id = targets[x].id;
-				-- get the action count
-				targets[x].action_count = ashita.bits.unpack_be(packet, bitOffset, 4) + 1;
+				bitOffset = bitOffset + 5;
+
+				-- get the targets animation
+				targets[x].actions[i].animation = ashita.bits.unpack_be(packet, bitOffset, 12);
 				-- adjust the offset
-				bitOffset = bitOffset + 4;
+				bitOffset = bitOffset + 12;
 
-				-- empty actions table
-				targets[x].actions = { };
+				-- get the targets special effect
+				targets[x].actions[i].effect = ashita.bits.unpack_be(packet, bitOffset, 7);
+				-- adjust the offset
+				bitOffset = bitOffset + 7;
 
-				-- loop through the action count
-				for i = 1, targets[x].action_count do
-					targets[x].actions[i] = { };
-					-- get the targets reaction
-					targets[x].actions[i].reaction = ashita.bits.unpack_be(packet, bitOffset, 5);
-					-- adjust the offset
-					bitOffset = bitOffset + 5;
-					-- get the targets special effect
-					targets[x].actions[i].effect = ashita.bits.unpack_be(packet, bitOffset, 7);
-					-- adjust the offset
-					bitOffset = bitOffset + 7;
-					-- get if there is a subeffect. 0 = false 1 = true
-					targets[x].actions[i].subeffect = ashita.bits.unpack_be(packet, bitOffset, 1);
-					-- adjust the offset
-					bitOffset = bitOffset + 1;
+				-- get the targets knockback
+				targets[x].actions[i].knockback = ashita.bits.unpack_be(packet, bitOffset, 3);
+				-- adjust the offset
+				bitOffset = bitOffset + 3;
 
-					-- get the targets param
-					-- use this for damage debuffs
-					targets[x].actions[i].param = ashita.bits.unpack_be(packet, bitOffset, 17);
-					-- adjust the offset
-					bitOffset = bitOffset + 17;
-					-- get the targets message id
-					-- use this to see if debuff lands
-					targets[x].actions[i].message_id = ashita.bits.unpack_be(packet, bitOffset, 10);
+				-- get the targets param
+				-- use for damage debuffs (dia, bio, helix, blue magic)
+				targets[x].actions[i].param = ashita.bits.unpack_be(packet, bitOffset, 17);
+				-- adjust the offset
+				bitOffset = bitOffset + 17;
+
+				-- get the targets message id
+				-- use for all normal debuffs (paralyze, slow, silence)
+				targets[x].actions[i].message_id = ashita.bits.unpack_be(packet, bitOffset, 10);
+				-- adjust the offset
+				bitOffset = bitOffset + 10;
+
+				-- adjust the offset manually
+				bitOffset = bitOffset + 31;
+
+				-- get if there is a subeffect. 0 = false 1 = true
+				targets[x].actions[i].subeffect = ashita.bits.unpack_be(packet, bitOffset, 1);
+				-- adjust the offset
+				bitOffset = bitOffset + 1;
+
+				-- check if there's a sub effect
+				if (targets[x].actions[i].subeffect == 1) then
+					-- get the targets add_effect
+					targets[x].actions[i].add_effect = ashita.bits.unpack_be(packet, bitOffset, 10);
 					-- adjust the offset
 					bitOffset = bitOffset + 10;
-					-- adjust the offset manually
-					bitOffset = bitOffset + 31;
 
-					local act_param = targets[x].actions[i].param;
-					local act_message = targets[x].actions[i].message_id;
+					-- get the targets add_effect_param
+					targets[x].actions[i].add_effect_param = ashita.bits.unpack_be(packet, bitOffset, 17);
+					-- adjust the offset
+					bitOffset = bitOffset + 17;
 
-					-- Message ID 0 is No Message.
-					if (act_message > 0) then
-						-- checks to see if any of the parameters match what's in the tables defined above
-						if (spell_debuff_status:contains(act_param)) or (spell_damage_debuff:contains(act_param)) then -- Spells that deal damage use the damage as the parameter
-							-- checks to see if we get a successful debuff message
-							if (spell_success:contains(act_message)) then
+					-- get the targets add_effect_message
+					targets[x].actions[i].add_effect_message = ashita.bits.unpack_be(packet, bitOffset, 10);
+					-- adjust the offset
+					bitOffset = bitOffset + 10;
+				end
 
-								prev_debuffs = tracked_mobs[target_id];
+				-- get if there is a spikes. 0 = false 1 = true
+				targets[x].actions[i].spikes = ashita.bits.unpack_be(packet, bitOffset, 1);
+				-- adjust the offset
+				bitOffset = bitOffset + 1;
 
-								if (prev_debuffs == nil) then
-									prev_debuffs = { };
-								end
-								local d = debuff_data[act_param];
+				-- check if there's spikes
+				if (targets[x].actions[i].spikes == 1) then
+					-- get the targets spikes_effect
+					targets[x].actions[i].spikes_effect = ashita.bits.unpack_be(packet, bitOffset, 10);
+					-- adjust the offset
+					bitOffset = bitOffset + 10;
 
-								-- Start of Results Block
-								if (d ~= nil) then
-									local debuff_name = d['name'];
-									local overwrites = d['overwrites'];
+					-- get the targets spikes_param
+					targets[x].actions[i].spikes_param = ashita.bits.unpack_be(packet, bitOffset, 14);
+					-- adjust the offset
+					bitOffset = bitOffset + 17;
 
-									-- Overwrite Check/Results Block
-									if (overwrites ~= nil and #overwrites > 0) then
-										for o_index, o_value in pairs(overwrites) do
-											local overwritten_debuff = debuff_data[o_value];
-											if (overwritten_debuff ~= nil) then
-												-- Insert Test Result Here
-												prev_debuffs = remove_from_table(prev_debuffs, o_value);
-											end
-										end
-									end
-
-
-									-- Block Checks several damage debuffs
-									if (string.find(debuff_name, 'Dia')) then
-									-- Dia/Bio Check Block
-									-- Bio has highest priority so only Dia needs to be checked
-									-- Bio 3 > Dia 3 > Bio 2 > Palling Salvo > Dia 2 > Bio 1 > Dia 1
-
-
-									elseif (string.find(debuff_name, 'helix')) then
-									-- Helix Tier and Damage Check Block
-									-- Helix 1 < Stronger Helix 1 < Helix 2 < Stronger Helix 2
-
-
-									elseif (blue_debuff:contains(act_param)) then
-									-- Blue Magic Damage Debuff Check Block
-
-									else
-									-- All other normal debuffs
-									-- Insert Test Results
-
-									end
-								end
-							end
-						end
-					end
+					-- get the targets spikes_message
+					targets[x].actions[i].spikes_message = ashita.bits.unpack_be(packet, bitOffset, 10);
+					-- adjust the offset
+					bitOffset = bitOffset + 10;
 				end
 			end
 		end
 
 		for index,value in pairs(targets) do
+			
+			for k,v in pairs(spell_success) do
+				if v == value.actions[1].message_id then
+
+				end
+			end
+
 			print(value.actions[1].message_id);
 			local f = AshitaCore:GetFontManager():Get('test-object');
-			f:SetText(string.format('Action Message Id: %d', value.actions[1].message_id));
+			f:SetText(string.format('Action Message Id: %d | Sub Effect: %d', value.actions[1].message_id, value.actions[1].subeffect));
+			
 		end
 	end
-	
-	-- Unsure which Message Packet to use so I have 2 blocks created just in case.
-	-- Message ID Packet based on Messages_Basic
-	if (id == 0x29) then
-	-- There are many things I am unsure of happening in this packet.
-	-- I'm just making wild guesses and hoping it works.
-	
-		local message_id = struct.unpack('I', packet, 0x18 + 1);
-		-- Unsure which packet data to use in this case.
-		local target_id = struct.unpack('I', packet, 0x08 + 1);
-		local target_name = target:GetTargetName();
-		local prev_debuffs = tracked_mobs[target_id];
-		if (prev_debuffs == nil) then
-			prev_debuffs = { };
-		end
-	end
-	-- Message ID Packet based on Messages_System
-	if (id == 0x53) then
-	-- This packet contains 2 params and the message ID.
-	-- Unsure if it's something else but I'm guessing it's Actor and Target.
-	
-		local message_id = struct.unpack('I', packet, 0x0C + 1);
-		local actor_id = struct.unpack('I', packet, 0x04 + 1);
-		local target_id = struct.unpack('I', packet, 0x08 + 1);
-		local target_name = target:GetTargetName();
-		local prev_debuffs = tracked_mobs[target_id];
-		if (prev_debuffs == nil) then
-			prev_debuffs = { };
-		end
-	end
-		
 	return false;
 end);
 
--- The following few functions were literally copy-pasted from the Windower Version.
--- I don't expect these to work exactly how they did in that one.
 
--- Removes Tracked Items from their respective tables.
-function remove_from_table(t, value)
-	for k,v in pairs(t) do
-		if (v == value) then
-			t[k] = nil;
-		end
-	end
-
-	return t;
-end
-
--- Used to see what highest Bio/Dia Tier is currently being tracked.
-function get_bio_teir(prev_debuffs)
-	local highest = 0;
-	for k,v in pairs(prev_debuffs) do
-		if (v == 230) then
-			highest = v;
-		elseif (v == 231) then
-			highest = v;
-		elseif (v == 232) then
-			highest = v;
-		end
-	end
-
-	return highest;
-end
-
--- Used for Damage Debuffs (Blue Magic) to see if there's a 
--- Debuff that is identical already being tracked.
-function has_debuff(prev_debuffs)
-    for k,v in pairs(prev_debuffs) do
-        if (blue_debuff:contains(v)) then
-			return true;
-        else
-			return false;
-		end
-	end
-end
-
--- Used to see what the highest tier and damage of
--- Helix is currently being tracked.
-function helix_check(prev_debuffs)
-	for k,v in pairs(prev_debuffs) do
-		if (helix2_debuff:contains(v)) then
-			return v;
-		elseif (helix1_debuff:contains(v)) then
-			return v;
-		else
-			return 0;
-		end
-	end
-end
-
--- Used to check to see if the actor is in your alliance.
--- If they are not, they will be ignored.
-function friend_check(party, actor_id)
-    for index, data in pairs(party) do
-        if (party[index] ~= nil) then
-            if (type(data) == 'table') then
-                if (data['mob'] ~= nil) then
-                    if (data['mob']['id'] == actor_id) then
-                        return true;
-                    end
-                end
-            end
-        end
-    end
-
-    return false;
-end
 
 ---------------------------------------------------------------------------------------------------
 -- func: outgoing_packet
