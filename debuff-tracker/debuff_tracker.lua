@@ -102,11 +102,12 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 			-- empty actions table
 			targets[x].actions = { };
 			
-			for index = 1, 4096, 1 do
-				local entity_manager = AshitaCore:GetDataManager():GetEntity();
-				if entity_manager:GetServerId(index) == targets[x].id then
-				print('we did it')
-			end
+		--	for index = 1, 1024, 1 do
+		--		local entity_manager = AshitaCore:GetDataManager():GetEntity();
+		--		if entity_manager:GetServerId(index) == targets[x].id then
+			--	print('we did it')
+		--		end
+		--	end
 
 			-- loop through the action count
 			for i = 1, targets[x].action_count do
@@ -195,24 +196,44 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		end
 
 		for index,value in pairs(targets) do
-			
-			-- Loop through Spell Success Messages
-			--for k,v in pairs(spell_debuff) do
-				-- Compare message id with spell success table
-				--if (v == value.actions[1].param) then
-					--print('Param Matches')
-					--debuff_attempt[#debuff_attempt + 1] = value.actions[1].param;
-				--end
+			local success = 0
+			local para = 0
+
+		--	for k,v in pairs(spell_debuff) do	
+		--		for s_i,s_v in pairs(spell_success) do
+		--			if (s_v == value.actions[1].message_id) then
+		--				print('success')
+		--			end
+		--		end
+				
+		--			if (v == value.actions[1].param) then
+		--				print('para')
+		--			end
 		--	end
-					
-			--for i,p in pairs(spell_success) do
-	--				if (v == value.actions[1].message_id) then
-	--					print('Message matches')
-	--				end
-			--end
-	
+			for k,v in pairs(spell_success) do	
+				if (v == value.actions[1].message_id) then
+					success = 1
+				end
+			end			
+			
+			for s_i,s_v in pairs(spell_debuff) do
+				if (s_v == value.actions[1].param) then
+					para = 1
+				end
+			end
+			
+			if para == 1 then
+				print('this works')
+				if success == 1 then
+					print('this method also works')
+				end
+			end	
+			
+		
 
 
+
+				
 		
 		--	print(value.actions[1].param);
 			local f = AshitaCore:GetFontManager():Get('test-object');
@@ -223,23 +244,3 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 	return false;
 end);
 
-
-
-local debuff_attempt = {
-
-};
----------------------------------------------------------------------------------------------------
--- func: outgoing_packet
--- desc: Called when our addon receives an outgoing packet.
----------------------------------------------------------------------------------------------------
-ashita.register_event('outgoing_packet', function(id, size, packet)
-	return false;
-end);
-
----------------------------------------------------------------------------------------------------
--- func: unload
--- desc: Called when our addon is unloaded.
----------------------------------------------------------------------------------------------------
-ashita.register_event('unload', function()
-	AshitaCore:GetFontManager():Delete('test-object');
-end);
