@@ -79,7 +79,11 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 
 		-- adjust the bitOffset
 		bitOffset = bitOffset + 64;
-
+		
+		-- I think this is how it is written out.
+		-- Hopefully gives us the spell id to help us identify which spell is casted.
+		local action_id = ashita.bits.unpack_be(packet, 86, 10);	
+			
 		-- create our targets table, empty
 		local targets = { };
 
