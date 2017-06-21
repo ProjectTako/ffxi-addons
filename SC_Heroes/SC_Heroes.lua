@@ -264,8 +264,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				propb = tostring(weapon_skills[skill_id].skillchain_b);
 				propc = tostring(weapon_skills[skill_id].skillchain_c);
 				start_time = os.time();
-				display_ws:visible(true);
-				display_sc:visible(false);
+				display_ws:SetVisibility(true);
+				display_sc:SetVisibility(false);
 			end
 			if (subeffect == 1) then
 				if (scid >= 1 and scid <= 16) then
@@ -274,8 +274,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 					ele2 = tostring(skillchains[scid].element2);
 					ele3 = tostring(skillchains[scid].element3);
 					ele4 = tostring(skillchains[scid].element4);
-					display_sc:visible(true);
-					display_ws:visible(false);
+					display_sc:SetVisibility(true);
+					display_ws:SetVisibility(false);
 					if (tracked_skillchain == nil) then
 						tracked_skillchain[1] = SC;
 					else
@@ -291,8 +291,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 			ele2 = tostring(skillchains[scid].element2);
 			ele3 = tostring(skillchains[scid].element3);
 			ele4 = tostring(skillchains[scid].element4);
-			display_sc:show();
-			display_ws:hide();
+			display_sc:SetVisibility(true);
+			display_ws:SetVisibility(false);
 			if (tracked_skillchain[1] == nil) then
 				tracked_skillchain[1] = SC;
 			else
