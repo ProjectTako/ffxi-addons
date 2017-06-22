@@ -17,10 +17,6 @@ local default_config =
         bgvisible   = true,
     }
 };
-Text = 
-{
-
-};
 
 local exConfig = default_config;
 ---------------------------------------------------------------------------------------------------
@@ -32,21 +28,20 @@ ashita.register_event('load', function()
 	exConfig = ashita.settings.load_merged(_addon.path .. 'settings/settings.json', exConfig);
 
 	-- create our test on screen objects
-		local bar = AshitaCore:GetFontManager():Create('test-object');
+		local f = AshitaCore:GetFontManager():Create('test-object');
 		
-		bar:SetPositionX(exConfig.font.position[1]);
-		bar:SetPositionY(exConfig.font.position[2]);
+		f:SetPositionX(exConfig.font.position[1]);
+		f:SetPositionY(exConfig.font.position[2]);
 		
 		
-		bar:SetColor(exConfig.font.color);
-		bar:SetFontFamily(exConfig.font.family);
-		bar:SetFontHeight(exConfig.font.size);
-		bar:SetBold(true);
-		bar:GetBackground():SetColor(exConfig.font.bgcolor);
-		bar:GetBackground():SetVisibility(exConfig.font.bgvisible);
-		bar:SetVisibility(true);
-		
-		previous = bar;
+		f:SetColor(exConfig.font.color);
+		f:SetFontFamily(exConfig.font.family);
+		f:SetFontHeight(exConfig.font.size);
+		f:SetBold(true);
+		f:GetBackground():SetColor(exConfig.font.bgcolor);
+		f:GetBackground():SetVisibility(exConfig.font.bgvisible);
+		f:SetVisibility(true);
+
 		
 
 	
@@ -262,7 +257,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 									end
 								end	-- end of loop
 							end -- end of overwriting check
-							-- Place Target Name into tracked_mobs1
+								
+							-- Adds the Spell ID to the next available Key in the tracked_mobs[target_index] table
 							prev_debuffs[#prev_debuffs + 1] = spell_id							
 						end
 					end
@@ -333,11 +329,11 @@ ashita.register_event('render', function()
 			-- go through and add the name of every Spell ID stored in the prev_debuff table
 			table.insert(text, string.format('%s', debuff_data[value]['name']))	 
 		end
-		-- separate everything with a new line... maybe
-		table.insert(final_text, text:concat('\n'));
+		-- separate everything with a comma maybe
+		table.insert(final_text, text:concat(', '));
 	end
-	-- separate all monsters with a |... maybe
-	f:SetText(final_text:concat(' | '));
+	-- separate all monsters with a new line... maybe
+	f:SetText(final_text:concat('\n'));
 	-- Currently does not remove old mobs unless they respawn with same index.
 
 	
