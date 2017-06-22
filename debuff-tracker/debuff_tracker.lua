@@ -327,7 +327,10 @@ ashita.register_event('render', function()
 			-- the value in this loop is the Spell ID that is being stored
 			-- use this Spell ID to get the name associated with the ID in our debuff table
 			-- go through and add the name of every Spell ID stored in the prev_debuff table
-			table.insert(text, string.format('%s', debuff_data[value]['name']))	 
+			table.insert(text, string.format('%s', debuff_data[value]['name']))
+			-- maybe for time, copy the SC Tracker render timer rules with tracked_time2 = tracked time - debuff_data[key]['duration'],
+			-- store the os.time() to prev_debuffs[spell_id], and make the string ('%s: %d', debuff_data[key]['name'], -timer) 
+			 
 		end
 		-- separate everything with a comma maybe
 		table.insert(final_text, text:concat(', '));
