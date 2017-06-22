@@ -331,7 +331,7 @@ ashita.register_event('render', function()
 			-- the value in this loop is the Spell ID that is being stored
 			-- use this Spell ID to get the name associated with the ID in our debuff table
 			-- go through and add the name of every Spell ID stored in the prev_debuff table
-			table.insert(text, string.format('%s', debuff_data[key]['name']))	 
+			table.insert(text, string.format('%s', debuff_data[value]['name']))	 
 		end
 		-- separate everything with a new line... maybe
 		table.insert(final_text, text:concat('\n'));
