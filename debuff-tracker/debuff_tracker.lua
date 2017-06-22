@@ -451,21 +451,9 @@ local debuff_data =
 --  [502] = { name = 'Kaustra', duration = 0, overwrites = { } },
 --  [000] = { name = 'Spooky Holder', duration = 0, overwrites = { } },
 }, { 'name', 'duration', 'overwrites' };
-local tracked_mobs1= 
+local tracked_mobs= 
 {
 	
-};
-local tracked_mobs2 = 
-{
-	
-};
-local tracked_mobs3 = 
-{
-	
-};
-local mob_details = 
-{
-
 };
 
 local spell_success = T{ 2, 230, 236, 237, 270, 277, 278, 279, 280, 266, 267, 268, 269, 271, 272, 320, 672 };
