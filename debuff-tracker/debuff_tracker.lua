@@ -21,120 +21,7 @@ Text =
 {
 
 };
-local debuff_data = 
-{
-	[23]  = { name = 'Dia', duration = 60, overwrites = { } },
-	[24]  = { name = 'Dia II', duration = 120, overwrites = { 23, 33, 230 } },
-	[25]  = { name = 'Dia III', duration = 90, overwrites = { 23, 24, 230, 231, 33 } },
-	[33]  = { name = 'Diaga', duration = 60, overwrites = { } },
-	[56]  = { name = 'Slow', duration = 120, overwrites = { } },
-	[58]  = { name = 'Paralyze', duration = 120, overwrites = { } },
-	[59]  = { name = 'Silence', duration = 120, overwrites = { } },
-	[79]  = { name = 'Slow II', duration = 120, overwrites = { 56 } },
-	[80]  = { name = 'Paralyze II', duration = 120, overwrites = { 58 } },
-	[98]  = { name = 'Repose', duration = 90, overwrites = { 253 } },
-	[220] = { name = 'Poison', duration = 90, overwrites = { } },
-	[221] = { name = 'Poison II', duration = 120, overwrites = { 220, 225 } },
-	[225] = { name = 'Poisonga', duration = 90, overwrites = { } },
-	[230] = { name = 'Bio', duration = 60, overwrites = { 23, 33 } },
-	[231] = { name = 'Bio II', duration = 120, overwrites = { 23, 24, 33 ,230 } },
-	[232] = { name = 'Bio III', duration = 30, overwrites = { 23, 24, 33, 230, 231 } },
-	[235] = { name = 'Burn', duration = 60, overwrites = { 236 } },	 --
-	[236] = { name = 'Frost', duration = 60, overwrites = { 237 } }, --
-	[237] = { name = 'Choke', duration = 60, overwrites = { 238 } }, -- These 6 spells I'm unsure of duration.  
-	[238] = { name = 'Rasp', duration = 60, overwrites = { 239 } },	 -- They will be 60s until I confirm.
-	[239] = { name = 'Shock', duration = 60, overwrites = { 240 } }, --
-	[240] = { name = 'Drown', duration = 60, overwrites = { 235 } }, --
-	[253] = { name = 'Sleep', duration = 60, overwrites = { } },
-	[254] = { name = 'Blind', duration = 180, overwrites = { } },
-	[255] = { name = 'Break', duration = 30, overwrites = { } },
-	[259] = { name = 'Sleep II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
-	[273] = { name = 'Sleepga', duration = 90, overwrites = { } },
-	[274] = { name = 'Sleepga II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
-	[276] = { name = 'Blind II', duration = 180, overwrites = { 254 } },
-	[278] = { name = 'Geohelix', duration = 274, overwrites = { } },	    --
-	[279] = { name = 'Hydrohelix', duration = 274, overwrites = { } },	--
-	[280] = { name = 'Anemohelix', duration = 274, overwrites = { } },	--
-	[281] = { name = 'Pyrohelix', duration = 274, overwrites = { } },	    -- Helix duration varies based on Job Points, Dark Arts, and Cape used.
-	[282] = { name = 'Cryohelix', duration = 274, overwrites = { } },	    -- This is my duration under Dark Arts, Cape, and no Tabula Rasa.
-	[283] = { name = 'Ionohelix', duration = 274, overwrites = { } },	    --
-	[284] = { name = 'Noctohelix', duration = 274, overwrites = { } },	--
-	[285] = { name = 'Luminohelix', duration = 274, overwrites = { } },   --
-	[286] = { name = 'Addle', duration = 120, overwrites = { } },
-	[319] = { name = 'Aisha: Ichi', duration = 120, overwrites = { } }, -- Don't know debuff duration
-	[341] = { name = 'Jubaku: Ichi', duration = 90, overwrites = { } },
-	[344] = { name = 'Hojo: Ichi', duration = 90, overwrites = { } },
-	[345] = { name = 'Hojo: Ni', duration = 90, overwrites = { 344 } },
-	[347] = { name = 'Kurayami: Ichi', duration = 90, overwrites = { } },
-	[348] = { name = 'Kurayami: Ni', duration = 90, overwrites = { 347 } },
-	[363] = { name = 'Sleepga', duration = 90, overwrites = { } },
-	[364] = { name = 'Sleepga II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
---	[156] = { name = 'Feint', duration = 30, overwrites = {} },
-	[372] = { name = 'Gambit', duration = 92, overwrites = {} },
-	[375] = { name = 'Rayke', duration = 47, overwrites = {} },
-	[365] = { name = 'Breakga', duration = 30, overwrites = { } },
-	[508] = { name = 'Yurin: Ichi', duration = 90, overwrites = { } },
---  [561] = { name = 'Frightful Roar', duration = 180, overwrites = { } },
-    [572] = { name = 'Sound Blast', duration = 180, overwrites = { } },
-    [576] = { name = 'Yawn', duration = 90, overwrites = { } },
-	[584] = { name = 'Sheep Song', duration = 60, overwrites = { } },
-    [598] = { name = 'Soporific', duration = 90, overwrites = { } },
---  [659] = { name = 'Demoralizing Roar', duration = 30, overwrites = { } },
---  [660] = { name = 'Cimicine Discharge', duration = 90, overwrites = { } },
-    [678] = { name = 'Dream Flower', duration = 90, overwrites = { } },
-	[703] = { name = 'Embalming Earth', duration = 180, overwrites = { } },
-	[705] = { name = 'Foul Waters', duration = 180, overwrites = { 235, 719 } },
-    [716] = { name = 'Nectarous Deluge', duration = 30, overwrites = { } },
-    [719] = { name = 'Searing Tempest', duration = 60, overwrites = { } },
-    [722] = { name = 'Entomb', duration = 60, overwrites = { } },
-    [723] = { name = 'Saurian Slide', duration = 60, overwrites = { } },
---  [724] = { name = 'Palling Salvo', duration = 90, overwrites = { 23, 33, 230 } },
-    [726] = { name = 'Scouring Spate', duration = 180, overwrites = { } },
-    [727] = { name = 'Silent Storm', duration = 300, overwrites = { } },
-    [728] = { name = 'Tenebral Crush', duration = 90, overwrites = { } },
-    [740] = { name = 'Tourbillion', duration = 60, overwrites = { } },
-    [752] = { name = 'Cesspool', duration = 60, overwrites = { } },
-    [753] = { name = 'Tearing Gust', duration = 60, overwrites = { } },
-	[841] = { name = 'Distract', duration = 120, overwrites = { } },
-	[842] = { name = 'Distract II', duration = 120, overwrites = { 841 } },
-	[843] = { name = 'Frazzle', duration = 120, overwrites = { } },
-	[844] = { name = 'Frazzle II', duration = 120, overwrites = { 843 } },
- 	[882] = { name = 'Distract III', duration = 120, overwrites = { 841, 842 } },
- 	[883] = { name = 'Frazzle III', duration = 120, overwrites = { 843, 844 } },
-	[884] = { name = 'Addle II', duration = 120, overwrites = { 286 } },
-	[885] = { name = 'Geohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },		--
-	[886] = { name = 'Hydrohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	--
-	[887] = { name = 'Anemohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	--
-	[888] = { name = 'Pyrohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	 	-- Helix duration varies based on Job Points, Dark Arts, and Cape used.
-	[889] = { name = 'Cryohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },		-- This is my duration under Dark Arts, Cape, and no Tabula Rasa.
-	[890] = { name = 'Ionohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	 	--
-	[891] = { name = 'Noctohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } }, 	--
-	[892] = { name = 'Luminohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } } 	--
---  [502] = { name = 'Kaustra', duration = 0, overwrites = { } },
---  [000] = { name = 'Spooky Holder', duration = 0, overwrites = { } },
-}, { 'name', 'duration', 'overwrites' };
-local tracked_mobs1= 
-{
-	
-};
-local tracked_mobs2 = 
-{
-	
-};
-local tracked_mobs3 = 
-{
-	
-};
-local mob_details = 
-{
 
-};
-
-local spell_success = T{ 2, 230, 236, 237, 270, 277, 278, 279, 280, 266, 267, 268, 269, 271, 272, 320, 672 };
-local spell_debuff = T{ 23, 24, 25, 33, 56, 58, 59, 79, 80, 98, 220, 221, 225, 230, 231, 232, 235, 236, 237, 238, 239, 240, 253, 254, 255, 259, 273, 274, 276, 286, 319, 341, 344, 345, 347, 348, 364, 365, 508, 572, 841, 842, 843, 844, 882, 883, 884 };
-local spell_debuff_status = T{ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 16, 18, 19, 20, 21, 31, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 147, 								148, 149, 168, 404, 562, 564, 536, 571 };
-local spell_damage_debuff = T{ 23, 24, 25, 33, 230, 231, 232, 278, 279, 280, 281, 282, 283, 284, 285, 885, 886, 887, 888, 889, 890, 891, 892,
-								703, 705, 716, 719, 722, 723, 726, 727, 728, 740, 752, 753 };
 local exConfig = default_config;
 ---------------------------------------------------------------------------------------------------
 -- func: load
@@ -188,9 +75,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		local entity_manager = AshitaCore:GetDataManager():GetEntity();
 	-- action packet
 	if (id == 0x28) then
+		-- defines everything in the action packet
 		local actor_id = struct.unpack('I', packet, 0x05 + 1);
-		--print(AshitaCore:GetDataManager():GetEntity():GetName(actor_id))
-		
 			
 		local target_count = struct.unpack('b', packet, 0x09 + 1);
 		
@@ -325,7 +211,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				end
 			end
 		end
-
+		-- where we do things with the targets in the action packet
 		for index,value in pairs(targets) do
 			local success = 0
 			local para = 0
@@ -353,15 +239,15 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 					-- sees if we have a valid message
 					if success == 1 then
 						local target_name, target_index = target_match(target_id);		
-									
-									prev_debuffs = tracked_mobs2[target_index];
+									-- creates a table for debuffs used in table tracked_mobs at 
+									-- value target_index.
+									-- so if target_index is 127, tracked_mobs[127] is a table for debuffs
+									-- for targets with an index of 127.
+									prev_debuffs = tracked_mobs[target_index];
 									if (prev_debuffs == nil) then
-										prev_debuffs = { };
-									end -- end of prev_debuffs nil check
-									prev_debuffs_names = tracked_mobs3[target_index];
-									if (prev_debuffs_names == nil) then
-										prev_debuffs_names = { };
-									end -- end of prev_debuffs nil check
+										prev_debuffs = { }
+									end -- nil check
+									
 									
 						local d = debuff_data[spell_id]; -- d = the spell's ID
 						if (d ~= nil) then						-- if a spell in the table is used we continue, all the results are at the end of this block
@@ -377,13 +263,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 								end	-- end of loop
 							end -- end of overwriting check
 							-- Place Target Name into tracked_mobs1
-							tracked_mobs1[target_index] = target_name;
-							-- Place Spell ID into tracked_mobs 2 
-							prev_debuffs[#prev_debuffs + 1] = spell_id;
-							tracked_mobs2[target_index] = prev_debuffs;
-							-- Place Spell Name into tracked_mobs3
-							prev_debuffs_names[#prev_debuffs_names +1] = debuff_name;
-							tracked_mobs3[target_index] = prev_debuffs_name;							
+							prev_debuffs[#prev_debuffs + 1] = spell_id							
 						end
 					end
 				end
@@ -434,22 +314,30 @@ function remove_from_table(t, value)
 end
 
 ashita.register_event('render', function()
-	local monster_count = 0
-	Text = ''
-	-- Currently creates a new line for every new mob.
-	for k, v in pairs(tracked_mobs1) do
-		Text = Text .. tracked_mobs1[k] .. '\n'
-		-- Currently mimics the last debuff name applied for each instance of mob tracked.
-		-- I need it to do similar to the above but match them to the appropriate mob.
-		for j = 1, #prev_debuffs_names do
-			Text = Text .. prev_debuffs_names[j] .. '\n' 
-		end
-				
-		Text = Text 
-		bar = AshitaCore:GetFontManager():Get('test-object');
-		bar:SetText(Text)	
-	end
+	-- for getting the name that is associated with the target index
+	local entity_manager = AshitaCore:GetDataManager():GetEntity();
+	-- create a table to hold text
+	-- this is the final text to be shown
+	local final_text = T{ }
+	local  f = AshitaCore:GetFontManager():Get('test-object');
 	
+	-- Go through the Tracked Mobs with the Key being the Target Index and Value Monster
+	for index, monster in pairs(tracked_mobs) do
+		-- Create another table for text that will get added with mobs and their debuffs
+		local text = T{ };
+		-- adds the monster name to the table instead of the target index
+		table.insert(text, string.format('%s: ', entity_manager:GetName(index)))
+		for key, value in pairs(monster) do
+			-- the value in this loop is the Spell ID that is being stored
+			-- use this Spell ID to get the name associated with the ID in our debuff table
+			-- go through and add the name of every Spell ID stored in the prev_debuff table
+			table.insert(text, string.format('%s', debuff_data[key]['name']))	 
+		end
+		-- separate everything with a new line... maybe
+		table.insert(final_text, text:concat('\n'));
+	end
+	-- separate all monsters with a |... maybe
+	f:SetText(final_text:concat(' | '));
 	-- Currently does not remove old mobs unless they respawn with same index.
 
 	
@@ -471,3 +359,117 @@ ashita.register_event('unload', function()
 
 	AshitaCore:GetFontManager():Delete('test-object');
 end);
+local debuff_data = 
+{
+	[23]  = { name = 'Dia', duration = 60, overwrites = { } },
+	[24]  = { name = 'Dia II', duration = 120, overwrites = { 23, 33, 230 } },
+	[25]  = { name = 'Dia III', duration = 90, overwrites = { 23, 24, 230, 231, 33 } },
+	[33]  = { name = 'Diaga', duration = 60, overwrites = { } },
+	[56]  = { name = 'Slow', duration = 120, overwrites = { } },
+	[58]  = { name = 'Paralyze', duration = 120, overwrites = { } },
+	[59]  = { name = 'Silence', duration = 120, overwrites = { } },
+	[79]  = { name = 'Slow II', duration = 120, overwrites = { 56 } },
+	[80]  = { name = 'Paralyze II', duration = 120, overwrites = { 58 } },
+	[98]  = { name = 'Repose', duration = 90, overwrites = { 253 } },
+	[220] = { name = 'Poison', duration = 90, overwrites = { } },
+	[221] = { name = 'Poison II', duration = 120, overwrites = { 220, 225 } },
+	[225] = { name = 'Poisonga', duration = 90, overwrites = { } },
+	[230] = { name = 'Bio', duration = 60, overwrites = { 23, 33 } },
+	[231] = { name = 'Bio II', duration = 120, overwrites = { 23, 24, 33 ,230 } },
+	[232] = { name = 'Bio III', duration = 30, overwrites = { 23, 24, 33, 230, 231 } },
+	[235] = { name = 'Burn', duration = 60, overwrites = { 236 } },	 --
+	[236] = { name = 'Frost', duration = 60, overwrites = { 237 } }, --
+	[237] = { name = 'Choke', duration = 60, overwrites = { 238 } }, -- These 6 spells I'm unsure of duration.  
+	[238] = { name = 'Rasp', duration = 60, overwrites = { 239 } },	 -- They will be 60s until I confirm.
+	[239] = { name = 'Shock', duration = 60, overwrites = { 240 } }, --
+	[240] = { name = 'Drown', duration = 60, overwrites = { 235 } }, --
+	[253] = { name = 'Sleep', duration = 60, overwrites = { } },
+	[254] = { name = 'Blind', duration = 180, overwrites = { } },
+	[255] = { name = 'Break', duration = 30, overwrites = { } },
+	[259] = { name = 'Sleep II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
+	[273] = { name = 'Sleepga', duration = 90, overwrites = { } },
+	[274] = { name = 'Sleepga II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
+	[276] = { name = 'Blind II', duration = 180, overwrites = { 254 } },
+	[278] = { name = 'Geohelix', duration = 274, overwrites = { } },	    --
+	[279] = { name = 'Hydrohelix', duration = 274, overwrites = { } },	--
+	[280] = { name = 'Anemohelix', duration = 274, overwrites = { } },	--
+	[281] = { name = 'Pyrohelix', duration = 274, overwrites = { } },	    -- Helix duration varies based on Job Points, Dark Arts, and Cape used.
+	[282] = { name = 'Cryohelix', duration = 274, overwrites = { } },	    -- This is my duration under Dark Arts, Cape, and no Tabula Rasa.
+	[283] = { name = 'Ionohelix', duration = 274, overwrites = { } },	    --
+	[284] = { name = 'Noctohelix', duration = 274, overwrites = { } },	--
+	[285] = { name = 'Luminohelix', duration = 274, overwrites = { } },   --
+	[286] = { name = 'Addle', duration = 120, overwrites = { } },
+	[319] = { name = 'Aisha: Ichi', duration = 120, overwrites = { } }, -- Don't know debuff duration
+	[341] = { name = 'Jubaku: Ichi', duration = 90, overwrites = { } },
+	[344] = { name = 'Hojo: Ichi', duration = 90, overwrites = { } },
+	[345] = { name = 'Hojo: Ni', duration = 90, overwrites = { 344 } },
+	[347] = { name = 'Kurayami: Ichi', duration = 90, overwrites = { } },
+	[348] = { name = 'Kurayami: Ni', duration = 90, overwrites = { 347 } },
+	[363] = { name = 'Sleepga', duration = 90, overwrites = { } },
+	[364] = { name = 'Sleepga II', duration = 120, overwrites = { 253, 273, 363, 576, 584, 598, 678 } },
+--	[156] = { name = 'Feint', duration = 30, overwrites = {} },
+	[372] = { name = 'Gambit', duration = 92, overwrites = {} },
+	[375] = { name = 'Rayke', duration = 47, overwrites = {} },
+	[365] = { name = 'Breakga', duration = 30, overwrites = { } },
+	[508] = { name = 'Yurin: Ichi', duration = 90, overwrites = { } },
+--  [561] = { name = 'Frightful Roar', duration = 180, overwrites = { } },
+    [572] = { name = 'Sound Blast', duration = 180, overwrites = { } },
+    [576] = { name = 'Yawn', duration = 90, overwrites = { } },
+	[584] = { name = 'Sheep Song', duration = 60, overwrites = { } },
+    [598] = { name = 'Soporific', duration = 90, overwrites = { } },
+--  [659] = { name = 'Demoralizing Roar', duration = 30, overwrites = { } },
+--  [660] = { name = 'Cimicine Discharge', duration = 90, overwrites = { } },
+    [678] = { name = 'Dream Flower', duration = 90, overwrites = { } },
+	[703] = { name = 'Embalming Earth', duration = 180, overwrites = { } },
+	[705] = { name = 'Foul Waters', duration = 180, overwrites = { 235, 719 } },
+    [716] = { name = 'Nectarous Deluge', duration = 30, overwrites = { } },
+    [719] = { name = 'Searing Tempest', duration = 60, overwrites = { } },
+    [722] = { name = 'Entomb', duration = 60, overwrites = { } },
+    [723] = { name = 'Saurian Slide', duration = 60, overwrites = { } },
+--  [724] = { name = 'Palling Salvo', duration = 90, overwrites = { 23, 33, 230 } },
+    [726] = { name = 'Scouring Spate', duration = 180, overwrites = { } },
+    [727] = { name = 'Silent Storm', duration = 300, overwrites = { } },
+    [728] = { name = 'Tenebral Crush', duration = 90, overwrites = { } },
+    [740] = { name = 'Tourbillion', duration = 60, overwrites = { } },
+    [752] = { name = 'Cesspool', duration = 60, overwrites = { } },
+    [753] = { name = 'Tearing Gust', duration = 60, overwrites = { } },
+	[841] = { name = 'Distract', duration = 120, overwrites = { } },
+	[842] = { name = 'Distract II', duration = 120, overwrites = { 841 } },
+	[843] = { name = 'Frazzle', duration = 120, overwrites = { } },
+	[844] = { name = 'Frazzle II', duration = 120, overwrites = { 843 } },
+ 	[882] = { name = 'Distract III', duration = 120, overwrites = { 841, 842 } },
+ 	[883] = { name = 'Frazzle III', duration = 120, overwrites = { 843, 844 } },
+	[884] = { name = 'Addle II', duration = 120, overwrites = { 286 } },
+	[885] = { name = 'Geohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },		--
+	[886] = { name = 'Hydrohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	--
+	[887] = { name = 'Anemohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	--
+	[888] = { name = 'Pyrohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	 	-- Helix duration varies based on Job Points, Dark Arts, and Cape used.
+	[889] = { name = 'Cryohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },		-- This is my duration under Dark Arts, Cape, and no Tabula Rasa.
+	[890] = { name = 'Ionohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } },	 	--
+	[891] = { name = 'Noctohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } }, 	--
+	[892] = { name = 'Luminohelix II', duration = 274, overwrites = { 278, 279, 280, 281, 282, 283, 284, 285 } } 	--
+--  [502] = { name = 'Kaustra', duration = 0, overwrites = { } },
+--  [000] = { name = 'Spooky Holder', duration = 0, overwrites = { } },
+}, { 'name', 'duration', 'overwrites' };
+local tracked_mobs1= 
+{
+	
+};
+local tracked_mobs2 = 
+{
+	
+};
+local tracked_mobs3 = 
+{
+	
+};
+local mob_details = 
+{
+
+};
+
+local spell_success = T{ 2, 230, 236, 237, 270, 277, 278, 279, 280, 266, 267, 268, 269, 271, 272, 320, 672 };
+local spell_debuff = T{ 23, 24, 25, 33, 56, 58, 59, 79, 80, 98, 220, 221, 225, 230, 231, 232, 235, 236, 237, 238, 239, 240, 253, 254, 255, 259, 273, 274, 276, 286, 319, 341, 344, 345, 347, 348, 364, 365, 508, 572, 841, 842, 843, 844, 882, 883, 884 };
+local spell_debuff_status = T{ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 16, 18, 19, 20, 21, 31, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 147, 								148, 149, 168, 404, 562, 564, 536, 571 };
+local spell_damage_debuff = T{ 23, 24, 25, 33, 230, 231, 232, 278, 279, 280, 281, 282, 283, 284, 285, 885, 886, 887, 888, 889, 890, 891, 892,
+								703, 705, 716, 719, 722, 723, 726, 727, 728, 740, 752, 753 };
