@@ -12,7 +12,7 @@ local default_config =
         family      = 'Arial',
         size        = 15,
         color       = 0xFFFFFFFF,
-        position    = { 200, 800 },
+        position    = { 1000, 500 },
         bgcolor     = 0x80000000,
         bgvisible   = true,
     }
@@ -280,6 +280,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		end
 		--or index,value in pairs(targets) do
 			for index, value in pairs(targets) do
+			if (action_type == 3 or action_type == 4) then
 			local scid = value.actions[1].add_effect
 			if (value.actions[1].message_id == 185) then
 			if (spell_id < 255) then
@@ -327,6 +328,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		
 		end
 	--end
+	end
 	end
 	end
 	return false;
