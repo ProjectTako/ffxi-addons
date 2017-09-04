@@ -11,7 +11,7 @@ local masks =
 	[1] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
 	[2] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
 	[3] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
-	[4] = string.char(0xFF, 0xFF, 0xFF, 0x1F);
+	[4] = string.char(0xFF, 0xFF, 0xFF, 0xFF);
 };
 
 -- Event id for cancel/nothing
@@ -52,7 +52,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 		-- check to see if the event id is a homepoint event. 
 		if (event_id >= 0x21FC and event_id <= 0x21FF) then
 			-- foruce the homepoint masks to include all home points, and not just the one's we've unlocked.
-			return original:sub(0x01, 0x0B) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. original:sub(0x1C);
+			return original:sub(0x01, 0x0C) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. original:sub(0x1D);
 		end
 	end
 end);

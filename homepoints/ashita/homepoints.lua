@@ -10,7 +10,7 @@ local masks =
 	[1] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
 	[2] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
 	[3] = string.char(0xFF, 0xFF, 0xFF, 0xFF),
-	[4] = string.char(0xFF, 0xFF, 0xFF, 0x1F);
+	[4] = string.char(0xFF, 0xFF, 0xFF, 0xFF);
 };
 
 -- Event id for cancel/nothing
@@ -50,7 +50,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		-- check to see if the event id is a homepoint event
 		if (event_id >= 0x21FC and event_id <= 0x21FF) then
 			-- force the homepoint masks to include all homepoints, not just the one's we've unlocked
-			local new_packet = (packet:sub(0x01, 0x0B) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. packet:sub(0x1C)):totable();
+			local new_packet = (packet:sub(0x01, 0x0C) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. packet:sub(0x1D)):totable();
 			AddIncomingPacket(id, new_packet);
 			return true;
 		end

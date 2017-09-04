@@ -50,7 +50,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 					local name = '';
 					for i = 1, (#original - 0x34), 1 do
 						local t = original:unpack('c', 0x34 + i);
-						name = name .. string.char(t);
+						name = name .. t;
 					end
 
 					if (name ~= nil and name ~= '') then
