@@ -15,6 +15,8 @@ local mCraftItem =
 	["ingredient_count"] = 0,
 	["ingredients"] = { } 
 };
+-- holds whether we want to override the bFastCraft to always use it and not reset between different synths
+local bFastCraftOverride = false;
 
 ---------------------------------------------------------------------------------------------------
 -- func: load
@@ -29,6 +31,26 @@ end);
 -- desc: Called when our addon receives a command.
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('command', function(cmd, nType) 
+	local args = cmd:args();
+	-- Ensure it's a fastcraft command.
+	if (args[1] ~= '/fastcraft') then
+		return false;
+	end
+
+	-- Make sure we have enough args to begin with.
+	if (#args < 2) then
+		return false;
+	end
+
+	if (args[2] == 'on') then
+		bFastCraftOverride = true;
+		return true;
+	elseif (args[2] == 'off') then
+		bFastCraftOverride = false;
+		bFastCraft = false;
+		return true;
+	end
+
 	return false;
 end);
 
@@ -66,7 +88,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		local param = struct.unpack('b', packet, 0x0C + 1);
 
 		-- check to make sure this packet is pretaining to our player
-		if (player == AshitaCore:GetDataManager():GetParty():GetMemberServerId(0) and bFastCraft) then
+		if ((player == AshitaCore:GetDataManager():GetParty():GetMemberServerId(0) and bFastCraft) or bFastCraftOverride) then
 			-- check the param and set a message based on the out come
 			if (param == 0) then
 				mSynthResult = 'Success - NQ.';

@@ -48,9 +48,9 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		-- read the event id from the packet
 		local event_id = struct.unpack('h', packet, 0x2C + 1);
 		-- check to see if the event id is a homepoint event
-		if (event_id >= 0x21FC and event_id <= 0x21FF) then
+		if (event_id >= 0x21FC and event_id <= 0x2200) then
 			-- force the homepoint masks to include all homepoints, not just the one's we've unlocked
-			local new_packet = (packet:sub(0x01, 0x0C) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. packet:sub(0x1D)):totable();
+			local new_packet = (packet:sub(0x00 + 1, 0x0B + 1) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. packet:sub(0x1C + 1)):totable();
 			AddIncomingPacket(id, new_packet);
 			return true;
 		end
@@ -81,7 +81,7 @@ ashita.register_event('outgoing_packet', function(id, size, packet)
 				-- they canceled it, let's intercept
 				if (result_id == cancel_result) then
 					-- force the result to our desired destination
-					local new_packet = (packet:sub(0x01, 0x08) .. destination .. packet:sub(0x0D)):totable();
+					local new_packet = (packet:sub(0x00 + 1, 0x07 + 1) .. destination .. packet:sub(0x0C + 1)):totable();
 					AddOutgoingPacket(id, new_packet);
 					return true;
 				end
