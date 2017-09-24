@@ -76,6 +76,9 @@ ashita.register_event('command', function(cmd, nType)
 		font:SetVisibility(config['font']['visible']);
 
 		return true;
+	elseif (args[2] == 'reset') then
+		config['spirit'] = 0;
+		return true;
 	end
 
 	return false;
