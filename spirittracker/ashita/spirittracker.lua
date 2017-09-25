@@ -91,7 +91,8 @@ end);
 ashita.register_event('incoming_text', function(mode, chat)
 	-- check to make sure we're tracking before we do expensive string work
 	if (config['tracking']) then
-		-- check to see if it's a spirit message
+		-- check to see if it's a spirit gain message
+		-- otherwise check to see if it's a spirit lost message
 		if (chat:find('imbue the item with %d+ spirit.')) then
 			-- check to see if we just did an action on the focuser. 
 			-- for some reason, this message gets sent three times, we only want to count it once
@@ -102,6 +103,20 @@ ashita.register_event('incoming_text', function(mode, chat)
 				if (count ~= 0) then
 					-- update the total spirit we have
 					config['spirit'] = config['spirit'] + count;
+					-- set this flag to false, to prevent adding duplicate lines
+					config['fed'] = false;
+				end
+			end
+		elseif (chat:find('spirit imbued has decreased by %d+')) then
+			-- check to see if we just did an action on the focuser. 
+			-- for some reason, this message gets sent three times, we only want to count it once
+			if (config['fed']) then
+				-- read how much spirit we lost from the chat messagen
+				local count = tonumber(chat:match('%d+'));
+				-- sanity checks
+				if (count ~= 0) then
+					-- update the total spirit we have
+					config['spirit'] = config['spirit'] - count;
 					-- set this flag to false, to prevent adding duplicate lines
 					config['fed'] = false;
 				end
@@ -159,7 +174,7 @@ ashita.register_event('outgoing_packet', function(id, size, packet)
 					config['tracking'] = false;
 				else 
 					-- this is here because for some reason it sends the chat line three times.
-					-- set this flag to let the incomint text event handler know we should read the first one
+					-- set this flag to let the incoming text event handler know we should read the first one
 					if (result_id >= 0x80000000) then
 						config['fed'] = true;
 					end
