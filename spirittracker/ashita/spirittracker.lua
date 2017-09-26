@@ -105,6 +105,9 @@ ashita.register_event('incoming_text', function(mode, chat)
 					config['spirit'] = config['spirit'] + count;
 					-- set this flag to false, to prevent adding duplicate lines
 					config['fed'] = false;
+
+					-- save our config here incase ffxi crashes or something and the unload addon event never fires
+					ashita.settings.save(_addon.path .. '/settings/spirittracker.json', config);
 				end
 			end
 		elseif (chat:find('spirit imbued has decreased by %d+')) then
@@ -119,6 +122,9 @@ ashita.register_event('incoming_text', function(mode, chat)
 					config['spirit'] = config['spirit'] - count;
 					-- set this flag to false, to prevent adding duplicate lines
 					config['fed'] = false;
+
+					-- save our config here incase ffxi crashes or something and the unload addon event never fires
+					ashita.settings.save(_addon.path .. '/settings/spirittracker.json', config);
 				end
 			end
 		end
