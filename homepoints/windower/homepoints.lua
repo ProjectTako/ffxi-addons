@@ -52,7 +52,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 		-- check to see if the event id is a homepoint event. 
 		if (event_id >= 0x21FC and event_id <= 0x2200) then
 			-- foruce the homepoint masks to include all home points, and not just the one's we've unlocked.
-			return original:sub(0x01, 0x0B) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. original:sub(0x1C);
+			return original:sub(0x0 + 1, 0x0B + 1) .. masks[1] .. masks[2] .. masks[3] .. masks[4] .. original:sub(0x1C + 1);
 		end
 	end
 end);
@@ -78,7 +78,7 @@ windower.register_event('outgoing chunk', function(id, original, modified, injec
 
 				-- they canceled, let's intercept
 				if (result_id == cancel_result) then
-					return original:sub(0x01, 0x08) .. destination .. original:sub(0x0D);
+					return original:sub(0x00 + 1, 0x07 + 1) .. destination .. original:sub(0x0C + 1);
 				end
 			end
 		end
