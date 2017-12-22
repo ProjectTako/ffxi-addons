@@ -31,7 +31,7 @@ windower.register_event('addon command', function (...)
 end)
 
 windower.register_event('incoming chunk', function(id, original, modified, injected)
-	if (id == 0x0E) then
+	if (id == 0x0D or id == 0x0E) then
 		if (scanning == true) then
 			local target_index = original:unpack('h', 0x08 + 1);
 

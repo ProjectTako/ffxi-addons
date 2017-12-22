@@ -143,7 +143,7 @@ end);
 -- desc: Called when our addon receives an incoming packet.
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('incoming_packet', function(id, size, packet)
-	if (id == 0x0E) then
+	if (id == 0x0D or id == 0x0E) then
 		if (scan_zone.scanning) then
 			local target_index = struct.unpack('h', packet, 0x08 + 1);
 
