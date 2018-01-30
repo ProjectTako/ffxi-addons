@@ -4,6 +4,7 @@ _addon.author = 'Project Tako';
 _addon.commands = { 'scanzone', 'sz' };
 
 require('pack');
+local bit = require('bit')
 
 local scanning = false;
 local scanning_index = 0;
@@ -31,7 +32,7 @@ windower.register_event('addon command', function (...)
 end)
 
 windower.register_event('incoming chunk', function(id, original, modified, injected)
-	if (id == 0x0D or id == 0x0E) then
+	if (id == 0x0E) then
 		if (scanning == true) then
 			local target_index = original:unpack('h', 0x08 + 1);
 
@@ -46,29 +47,31 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 						windower.add_to_chat(128, string.format("[ScanZone]Found Entity: %d", id));
 					end
 
-					--if (updatemask & 0x08) then
-					local name = '';
-					for i = 1, (#original - 0x34), 1 do
-						local t = original:unpack('c', 0x34 + i);
-						name = name .. t;
+					if (bit.band(updatemask, 0x08)) then
+						local name = '';
+						for i = 1, (#original - 0x34), 1 do
+							local t = original:unpack('c', 0x34 + i);
+							name = name .. string.char(t);
+						end
+
+						if (name ~= nil and name ~= '') then
+							windower.add_to_chat(128, string.format("[ScanZone]Name: %s", name));
+						end
 					end
 
-					if (name ~= nil and name ~= '') then
-						windower.add_to_chat(128, string.format("[ScanZone]Name: %s", name));
+					if (bit.band(updatemask, 0x01)) then
+						local x, z, y = original:unpack('fff', 0x0C + 1);
+						if (x ~= nil and z ~= nil and y ~= nil) then
+							windower.add_to_chat(128, string.format("[ScanZone]Position: (%.2f, %.2f, %.2f)", x, y, z));
+						end
 					end
-					--end
 
-					--if (updatemask & 0x01) then
-					local x, z, y = original:unpack('fff', 0x0C + 1);
-					if (x ~= nil and z ~= nil and y ~= nil) then
-						windower.add_to_chat(128, string.format("[ScanZone]Position: (%.2f, %.2f, %.2f)", x, y, z));
+					if (bit.band(updatemask, 0x04)) then
+						local hpp, animation, status = original:unpack('ccc', 0x1E + 1);
+
+						windower.add_to_chat(128, string.format("[ScanZone]HPP: %d", hpp));
+						windower.add_to_chat(128, string.format("[ScanZone]Status: %d", status));
 					end
-					--end
-
-					local hpp, animation, status = original:unpack('ccc', 0x1E + 1);
-
-					windower.add_to_chat(128, string.format("[ScanZone]HPP: %d", hpp));
-					windower.add_to_chat(128, string.format("[ScanZone]Status: %d", status));
 				end
 			end
 		end
