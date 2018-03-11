@@ -21,10 +21,20 @@ local m_ClusterMap =
 -- table to hold our synth results, just so we can keep track 
 local m_SynthResults = 
 {
-	['total'] = 0,
-	['breaks'] = 0,
-	['success'] = 0,
-	['hqs'] = 0
+	['session'] = 
+	{
+		['total'] = 0,
+		['breaks'] = 0,
+		['success'] = 0,
+		['hqs'] = 0
+	},
+	['total'] = 
+	{
+		['total'] = 0,
+		['breaks'] = 0,
+		['success'] = 0,
+		['hqs'] = 0
+	}
 };
 
 -- holds the synth result (break/nq/hq) for when we instantly complete the synth.
@@ -33,8 +43,8 @@ local m_SynthResultMessage = '';
 -- flag to tell the addon to finish the synth instantly, rather than waiting for the entire animation
 local b_FastCraft = false;
 
--- flag that tells the addon if we're in mule mode or not. 
-local b_MuleMode = false;
+-- flag that holds whether we just used a cluster, so that apon incomming item packet, we can check to see if it's the crystal
+local b_UsedCluster = false;
 
 -- our on-screen font object config
 local m_FontConfig = 
@@ -52,11 +62,25 @@ local m_FontConfig =
 	['visible'] = true
 };
 
+-- mule mode variables
+
+-- flag that tells the addon if we're in mule mode or not. 
+local b_MuleMode = false;
+
 -- time we last tried a synth
-local m_LastSynthAttempt = os.clock();
+local m_LastSynthAttempt = os.time();
 
 -- delay (in seconds) between synth attempts
-local m_SynthDelay = 2;
+local m_SynthDelay = 3;
+
+-- action queue
+local m_ActionQueue = { };
+
+-- queue delay
+local m_ActionDelay = 1;
+
+-- holds last action time of attempting to process the queue.
+local m_ActionQueueTime = 0;
 
 ---------------------------------------------------------------------------------------------------
 -- func: find synth
@@ -140,7 +164,8 @@ local function send_synth_packet(synth)
 
 	-- check to make sure we have everything we need for the synth packet
 	local packet = struct.pack('bbbbbbhbbhhhhhhhhbbbbbbbbh', 0x96, 0x12, 0x00, 0x00, hash, 0x00, synth['crystal'], synth['crystal index'], 0x01, synth['sphere item'], 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, synth['sphere item index'], 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00):totable();
-	AddOutgoingPacket(0x96, packet);
+	--AddOutgoingPacket(0x96, packet);
+	table.insert(m_ActionQueue, { 0x96, packet });
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -158,6 +183,8 @@ local function find_cluster(crystal)
 			return index, 0;
 		end
 	end
+
+	return 0, 0;
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -172,7 +199,8 @@ local function send_use_item_packet(slot, bag)
 	local index = AshitaCore:GetDataManager():GetParty():GetMemberTargetIndex(0);
 
 	local packet = struct.pack('bbbbIIhbbbbbb', 0x37, 0x10, 0x00, 0x00, id, 0x00, index, slot, 0x00, bag, 0x00, 0x00, 0x00):totable();
-	AddOutgoingPacket(0x37, packet);
+	--AddOutgoingPacket(0x37, packet);
+	table.insert(m_ActionQueue, { 0x37, packet });
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -194,6 +222,12 @@ local function flow()
 			if (clusterIndex ~= 0) then
 				-- send a use item packet
 				send_use_item_packet(clusterIndex, bag);
+				-- we can't just send the synth packet here
+				-- 1) we don't have a crystal index/slot
+				-- 2) what if the cluster usage fails, or we don't have one
+				--send_synth_packet(synth);
+				-- set flag to look for incoming item packet for clusters
+				b_UsedCluster = true;
 			else
 				if (b_MuleMode == false) then
 					print('[EasySphere] Unable to find crystal or cluster.');
@@ -226,7 +260,7 @@ ashita.register_event('load', function()
 	font:SetVisibility(m_FontConfig['visible']);
 	font:GetBackground():SetColor(m_FontConfig['bgcolor']);
 	font:GetBackground():SetVisibility(m_FontConfig['bgvisible']);
-	font:SetText(string.format('Total Synths: %d\nSuccess: %d\nHQs: %d\nBreaks: %d', m_SynthResults['total'], m_SynthResults['success'], m_SynthResults['hqs'], m_SynthResults['breaks']));
+	font:SetText(string.format('Total Synths: %d (%d)\nSuccess: %d (%d)\nHQs: %d (%d)\nBreaks: %d (%d)', m_SynthResults['session']['total'], m_SynthResults['total']['total'], m_SynthResults['session']['success'], m_SynthResults['total']['success'], m_SynthResults['session']['hqs'], m_SynthResults['total']['hqs'], m_SynthResults['session']['breaks'], m_SynthResults['total']['breaks']));
 end);
 
 ---------------------------------------------------------------------------------------------------
@@ -298,20 +332,28 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 			-- check the param and set a message based on the out come
 			if (param == 0) then
 				m_SynthResultMessage = 'Success - NQ.';
-				m_SynthResults['success'] = m_SynthResults['success'] + 1;
+				m_SynthResults['total']['success'] = m_SynthResults['total']['success'] + 1;
+				m_SynthResults['session']['success'] = m_SynthResults['session']['success'] + 1;
 			elseif (param == 1) then
 				m_SynthResultMessage = 'Break.';
-				m_SynthResults['breaks'] = m_SynthResults['breaks'] + 1;
+				m_SynthResults['total']['breaks'] = m_SynthResults['total']['breaks'] + 1;
+				m_SynthResults['session']['breaks'] = m_SynthResults['session']['breaks'] + 1;
 			elseif (param == 2) then
 				m_SynthResultMessage = 'Success - HQ.';
-				m_SynthResults['success'] = m_SynthResults['success'] + 1;
-				m_SynthResults['hqs'] = m_SynthResults['hqs'] + 1;
+				m_SynthResults['total']['success'] = m_SynthResults['total']['success'] + 1;
+				m_SynthResults['total']['hqs'] = m_SynthResults['total']['hqs'] + 1;
+				m_SynthResults['session']['success'] = m_SynthResults['session']['success'] + 1;
+				m_SynthResults['session']['hqs'] = m_SynthResults['session']['hqs'] + 1;
 			else
 				m_SynthResultMessage = string.format('Unknown Synth Result. Param: %d', param);
 			end
 
 			-- increment toal
-			m_SynthResults['total'] = m_SynthResults['total'] + 1;
+			m_SynthResults['total']['total'] = m_SynthResults['total']['total'] + 1;
+			m_SynthResults['session']['total'] = m_SynthResults['session']['total'] + 1;
+
+			-- save our config
+			ashita.settings.save(_addon.path .. '/settings/EasySphere_Synth.json', m_SynthResults);
 
 			if (b_FastCraft) then
 				-- inject a Synth Complete packet
@@ -322,6 +364,12 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				print(string.format('[EasySphere] Synthesis Result: %s', m_SynthResultMessage));
 			end
 		end
+	elseif (id == 0x0A) then -- zone packet
+		-- reset 'session'
+		m_SynthResults['session']['total'] = 0;
+		m_SynthResults['session']['success'] = 0;
+		m_SynthResults['session']['hqs'] = 0;
+		m_SynthResults['session']['breaks'] = 0;
 	elseif (id == 0xD2) then -- treasure pool packets
 		if (b_MuleMode) then
 			local itemId = struct.unpack('h', packet, 0x10 + 1);
@@ -336,6 +384,24 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 						local lootItem = struct.pack("bbbbbbb", 0x41, 0x04, 0x00, 0x00, itemSlot, 0x00, 0x00, 0x00):totable();
                 		AddOutgoingPacket(0x41, lootItem);
 					end
+				end
+			end
+		end
+	elseif (id == 0x20) then --inventory item packet
+		-- if we're checking for a cluster being used
+		if (b_UsedCluster) then
+			-- get the item id of thd incoming inventory item
+			local itemId = struct.unpack('h', packet, 0x0C + 1);
+
+			-- loop through our cluster map, and if the incomming item id is a crystal we care about
+			for crystal, cluster in pairs(m_ClusterMap) do
+				if (crystal == itemId) then
+					-- set flag to false
+					b_UsedCluster = false;
+					-- queue up the normal flow
+					flow();
+					-- break out of loop 
+					break;
 				end
 			end
 		end
@@ -375,12 +441,23 @@ end);
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('render', function()
 	local font = AshitaCore:GetFontManager():Get('__easy_sphere_addon');
-	font:SetText(string.format('Total Synths: %d\nSuccess: %d\nHQs: %d\nBreaks: %d', m_SynthResults['total'], m_SynthResults['success'], m_SynthResults['hqs'], m_SynthResults['breaks']));
+	font:SetText(string.format('Total Synths: %d (%d)\nSuccess: %d (%d)\nHQs: %d (%d)\nBreaks: %d (%d)', m_SynthResults['session']['total'], m_SynthResults['total']['total'], m_SynthResults['session']['success'], m_SynthResults['total']['success'], m_SynthResults['session']['hqs'], m_SynthResults['total']['hqs'], m_SynthResults['session']['breaks'], m_SynthResults['total']['breaks']));
 
 	if (b_MuleMode) then
-		if (m_LastSynthAttempt <= (os.clock() + m_SynthDelay)) then
+		if (os.time() >= (m_LastSynthAttempt + m_SynthDelay)) then
+			m_LastSynthAttempt = os.time();
+
 			flow();
-			m_LastSynthAttempt = os.clock();
+		end
+	end
+
+	if (os.time() >= (m_ActionQueueTime + m_ActionDelay)) then
+		m_ActionQueueTime = os.time();
+
+		if (#m_ActionQueue > 0) then
+			local data = table.remove(m_ActionQueue, 1);
+
+			AddOutgoingPacket(data[1], data[2]);
 		end
 	end
 end);
@@ -403,6 +480,12 @@ ashita.register_event('unload', function()
 	-- read the position incase the user has dragged the font object
 	m_FontConfig['position']['x'] = font:GetPositionX();
 	m_FontConfig['position']['y'] = font:GetPositionY();
+
+	-- reset 'session' before we save
+	m_SynthResults['session']['total'] = 0;
+	m_SynthResults['session']['success'] = 0;
+	m_SynthResults['session']['hqs'] = 0;
+	m_SynthResults['session']['breaks'] = 0;
 
 	-- save our config
 	ashita.settings.save(_addon.path .. '/settings/EasySphere_Synth.json', m_SynthResults);
