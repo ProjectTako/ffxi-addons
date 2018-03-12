@@ -272,7 +272,7 @@ ashita.register_event('outgoing_packet', function(id, size, packet)
 			-- if the event has been canceled, it's the signal to force the event result to start the void watch with max displacers 
 			if (result_id == cancel_result) then
 				-- check to make sure we've traded. waste of stones otherwise
-				if (has_traded or (settings['cell_count'] == 0 and setttings['displacer_count'] == 0)) then
+				if (has_traded or (settings['cell_count'] == 0 and settings['displacer_count'] == 0)) then
 					-- char 0 = 0x01 + 0x10 per displacer
 					-- i.e. 0x11 = start with 1 displacer
 					--      0x21 = start with 2 displacers
