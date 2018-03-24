@@ -89,46 +89,6 @@ end);
 -- desc: Called when the game client has begun to add a new line of text to the chat box.
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('incoming_text', function(mode, chat)
-	-- check to make sure we're tracking before we do expensive string work
-	if (config['tracking']) then
-		-- check to see if it's a spirit gain message
-		-- otherwise check to see if it's a spirit lost message
-		if (chat:find('imbue the item with %d+ spirit.')) then
-			-- check to see if we just did an action on the focuser. 
-			-- for some reason, this message gets sent three times, we only want to count it once
-			if (config['fed']) then 
-				-- read how much spirit we got from the chat message
-				local count = tonumber(chat:match('%d+'));
-				-- basic sanity checks
-				if (count ~= 0) then
-					-- update the total spirit we have
-					config['spirit'] = config['spirit'] + count;
-					-- set this flag to false, to prevent adding duplicate lines
-					config['fed'] = false;
-
-					-- save our config here incase ffxi crashes or something and the unload addon event never fires
-					ashita.settings.save(_addon.path .. '/settings/spirittracker.json', config);
-				end
-			end
-		elseif (chat:find('spirit imbued has decreased by %d+')) then
-			-- check to see if we just did an action on the focuser. 
-			-- for some reason, this message gets sent three times, we only want to count it once
-			if (config['fed']) then
-				-- read how much spirit we lost from the chat messagen
-				local count = tonumber(chat:match('%d+'));
-				-- sanity checks
-				if (count ~= 0) then
-					-- update the total spirit we have
-					config['spirit'] = config['spirit'] - count;
-					-- set this flag to false, to prevent adding duplicate lines
-					config['fed'] = false;
-
-					-- save our config here incase ffxi crashes or something and the unload addon event never fires
-					ashita.settings.save(_addon.path .. '/settings/spirittracker.json', config);
-				end
-			end
-		end
-	end
     return false;
 end);
 
@@ -148,6 +108,22 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		if (event_id == config['event'] and zone_id == config['zone']) then
 			-- if it's the start event, start the tracking
 			config['tracking'] = true;
+		end
+	elseif (id == 0x5C) then -- event update packet
+		-- make sure we're tracking
+		if (config['tracking']) then
+			-- make sure we just fed a sphere
+			if (config['fed']) then
+				-- read the new amount of spirit out of the packet
+				local param7 = struct.unpack('I', packet, 0x20 + 1);
+				-- update spirit total
+				config['spirit'] = param7;
+				-- reset flag
+				config['fed'] = false;
+
+				-- save our config here incase ffxi crashes or something and the unload addon event never fires
+				ashita.settings.save(_addon.path .. '/settings/spirittracker.json', config);
+			end
 		end
 	end
 	return false;
