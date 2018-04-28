@@ -70,6 +70,8 @@ ashita.register_event('command', function(cmd, nType)
 	return false;
 end);
 
+
+
 ---------------------------------------------------------------------------------------------------
 -- func: incoming_packet
 -- desc: Called when our addon receives an incoming packet.
@@ -107,12 +109,26 @@ ashita.register_event('unload', function()
 	equipViewer:Delete();
 end);
 
+ashita.register_event('render', function()
+	local x = AshitaCore:GetFontManager():Get('__equipViewer_background'):GetPositionX();
+	local y = AshitaCore:GetFontManager():Get('__equipViewer_background'):GetPositionY();
+	for k,v in pairs(equipViewerConfig['position']) do
+		if (k ~= x) or (v ~= y) then
+			equipViewerConfig['position'] = { x, y };
+		end
+		equipViewer:Move(equipViewerConfig['position'][1], equipViewerConfig['position'][2]);
+	end
+end );
 
 -- Functions to work with Font/Primitive Objects
 function ashitaPrimitiveCreate(name)
 	local f = AshitaCore:GetFontManager():Create(name);
 	f:SetAutoResize(false);
-	f:SetLocked(true);
+	if (name == '__equipViewer_background') then
+		f:SetLocked(false);		
+	else
+		f:SetLocked(true);		
+	end	
 end
 
 function ashitaSetText(name, text)
