@@ -10,7 +10,8 @@ local default_config =
 {
 	position = { 500, 500 },
 	color = 0xFFFFFFFF,
-	background_color = 0x40000000
+	background_color = 0x40000000,
+	size = 32
 };
 
 local equipViewerConfig = default_config;
@@ -33,6 +34,9 @@ ashita.register_event('load', function()
 
 	-- Create instance of our "class"
 	equipViewer = EquipViewer();
+
+	-- set the size before we do anything else, since if we do it after it'll redo a lot of work
+	equipViewer:SelectSize(equipViewerConfig['size']);
 
 	-- Inject the functions it needs to create onscreen objects
 	equipViewer:InjectPrimitiveDependancies(ashitaPrimitiveCreate, ashitaPrimitiveSetPosition, ashitaPrimitiveSetSize, ashitaPrimitiveSetFixToTexture, ashitaPrimitiveSetVisibility, ashitaPrimitiveSetColor, ashitaSetText, ashitaPrimitiveSetTextureFromFile, ashitePrimitiveDelete);
@@ -66,7 +70,26 @@ ashita.register_event('command', function(cmd, nType)
 
 		equipViewerConfig['position'] = { tonumber(args[3]), tonumber(args[4]) };
 		equipViewer:Move(equipViewerConfig['position'][1], equipViewerConfig['position'][2]);
+
+		return true;
 	end 
+
+	if (args[2] == 'size') then
+		if (#args < 3) then
+			return false;
+		end
+
+		local size = tonumber(args[3]);
+		local validSize = equipViewer:SelectSize(size);
+		if (validSize > -1) then
+			equipViewerConfig['size'] = size;
+
+			equipViewer:Resize(equipViewerConfig['position'][1], equipViewerConfig['position'][2], equipViewerConfig['size']);
+		end
+
+		return true;
+	end
+
 	return false;
 end);
 
@@ -106,7 +129,6 @@ ashita.register_event('unload', function()
 	-- delete all of the objects
 	equipViewer:Delete();
 end);
-
 
 -- Functions to work with Font/Primitive Objects
 function ashitaPrimitiveCreate(name)
@@ -179,7 +201,7 @@ end
 
 -- Pathing functions
 function ashitaGetTexturePath(itemId)
-	local path = _addon.path .. '\\icons\\' .. itemId .. '.png';
+	local path = _addon.path .. '\\icons\\' .. equipViewerConfig['size'] .. '\\' .. itemId .. '.png';
 	if (ashita.file.file_exists(path)) then
 		return path;
 	else

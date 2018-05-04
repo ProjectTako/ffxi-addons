@@ -22,9 +22,25 @@ local slotMapping =
 	[15] = { slot = 8, slot_name = 'feet' }
 }, { slot, slot_name };
 
+local sizes = { 16, 32, 48, 64 };
+local selectedSize = sizes[2];
+
 EquipViewer = class(function()
 
 end);
+
+function EquipViewer:SelectSize(size)
+	-- don't use tables:contains here to avoid needing extra includes
+	for x = 1, #sizes, 1 do
+		if (sizes[x] == size) then
+			selectedSize = sizes[x];
+
+			return selectedSize;
+		end
+	end
+
+	return -1;
+end
 
 function EquipViewer:InjectPrimitiveDependancies(createPrimitiveObject, setPosition, setSize, setFixToTexture, setVisibility, setColor, setText, setTexture, deletePrimitiveObject)
 	___functions['createPrimitiveObject'] = createPrimitiveObject;
@@ -47,20 +63,20 @@ function EquipViewer:Create(startX, startY, color, background_color)
 	-- background
 	___functions['createPrimitiveObject']('__equipViewer_background');
 	___functions['setPosition']('__equipViewer_background', startX, startY);
-	___functions['setSize']('__equipViewer_background', 128, 128);
+	___functions['setSize']('__equipViewer_background', (selectedSize * 4), (selectedSize * 4));
 	___functions['setVisibility']('__equipViewer_background', true);
 	___functions['setColor']('__equipViewer_background', background_color);
 
 	-- equipment slots
 	for x = 0, 15, 1 do
-		local posX = startX + ((x % 4) * 32);
-		local posY = startY + (math.floor(x / 4) * 32);
+		local posX = startX + ((x % 4) * selectedSize);
+		local posY = startY + (math.floor(x / 4) * selectedSize);
 
 		___functions['createPrimitiveObject'](string.format('__equipViewer_slot%d', x));
 		___functions['setPosition'](string.format('__equipViewer_slot%d', x), posX, posY);
 		___functions['setVisibility'](string.format('__equipViewer_slot%d', x), true);
 		___functions['setColor'](string.format('__equipViewer_slot%d', x), color);
-		___functions['setSize'](string.format('__equipViewer_slot%d', x), 32, 32);
+		___functions['setSize'](string.format('__equipViewer_slot%d', x), selectedSize, selectedSize);
 	end
 end
 
@@ -68,10 +84,24 @@ function EquipViewer:Move(startX, startY)
 	___functions['setPosition']('__equipViewer_background', startX, startY);
 
 	for x = 0, 15, 1 do
-		local posX = startX + ((x % 4) * 32);
-		local posY = startY + (math.floor(x / 4) * 32);
+		local posX = startX + ((x % 4) * selectedSize);
+		local posY = startY + (math.floor(x / 4) * selectedSize);
 		___functions['setPosition'](string.format('__equipViewer_slot%d', x), posX, posY);
 	end
+end
+
+function EquipViewer:Resize(startX, startY, size)
+	___functions['setSize']('__equipViewer_background', (selectedSize * 4), (selectedSize * 4));
+
+	for x = 0, 15, 1 do
+		local posX = startX + ((x % 4) * selectedSize);
+		local posY = startY + (math.floor(x / 4) * selectedSize);
+
+		___functions['setPosition'](string.format('__equipViewer_slot%d', x), posX, posY);
+		___functions['setSize'](string.format('__equipViewer_slot%d', x), selectedSize, selectedSize);
+	end
+
+	EquipViewer:Update();
 end
 
 function EquipViewer:Update()

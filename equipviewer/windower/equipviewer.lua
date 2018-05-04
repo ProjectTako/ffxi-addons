@@ -11,7 +11,8 @@ local default_config =
 {
 	position = { 900, 800 },
 	color = 0xFFFFFFFF,
-	background_color = 0x40000000
+	background_color = 0x40000000,
+	size = 32
 };
 
 local equipViewerConfig = default_config;
@@ -31,6 +32,9 @@ windower.register_event('load', function()
 	if not (windower.dir_exists(icon_path)) then
 		windower.create_dir(icon_path);
 	end
+
+	-- set the size before we do anything else, since if we do it after it'll redo a lot of work
+	equipViewer:SelectSize(equipViewerConfig['size']);
 
 	-- Inject the functions it needs to create onscreen objects
 	equipViewer:InjectPrimitiveDependancies(windowerPimitiveCreate, windowerPrimitiveSetPosition, windowerPrimitiveSetSize, windowerPrimitiveSetFixToTexture, windowerPrimitiveSetVisibility, windowerPrimitiveSetColor, windowerSetText, windowerPrimitiveSetTextureFromFile, windowerPrimitiveDelete);
@@ -61,6 +65,20 @@ windower.register_event('addon command', function (...)
 
     	equipViewerConfig['position'] = { tonumber(cmd_args[1]), tonumber(cmd_args[2]) };
     	equipViewer:Move(equipViewerConfig['position'][1], equipViewerConfig['position'][2]);
+    end
+
+    if (cmd == 'size') then
+    	if (#cmd_args < 1) then
+    		return;
+    	end
+
+    	local size = tonumber(cmd_args[1]);
+    	local validSize = equipViewer:SelectSize(size);
+		if (validSize > -1) then
+			equipViewerConfig['size'] = size;
+
+			equipViewer:Resize(equipViewerConfig['position'][1], equipViewerConfig['position'][2], equipViewerConfig['size']);
+		end
     end
 end);
 
@@ -147,7 +165,7 @@ function windowerGetEquippedItemId(slot, slot_name)
 end
 
 function windowerGetTexturePath(itemId)
-	local path = windower.addon_path  .. 'icons/' .. itemId .. '.png';
+	local path = windower.addon_path  .. 'icons/' .. equipViewerConfig['size'] .. '/' .. itemId .. '.png';
 	if (windower.file_exists(path)) then
 		return path;
 	else
