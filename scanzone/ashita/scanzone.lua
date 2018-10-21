@@ -47,7 +47,6 @@ local function find_mob_by_name(name_to_find)
 		-- make sure we have a valid dat file path
 		if (dat ~= nil) then
 			-- open the dat file
-			local path = string.format('%s\\..\\FINAL FANTASY XI\\%s', ashita.file.get_install_dir(), dat);
 			local file = io.open(string.format('%s\\..\\FINAL FANTASY XI\\%s', ashita.file.get_install_dir(), dat), 'rb');
 			-- verify we have a valid file handle
 			if (file ~= nil) then
@@ -82,8 +81,6 @@ local function find_mob_by_name(name_to_find)
 						results[#results + 1] = { name = name, id = id, index = bit.band(id, 0xFFF) };
 					end
 				end
-			else
-				print(string.format("File Not Found! %s", path));
 			end
 		end
 	end
