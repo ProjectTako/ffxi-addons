@@ -40,6 +40,11 @@ local default_settings =
 	['size'] = 32
 };
 
+
+---------------------------------------------------------------------------------------------------
+-- func: get_equipped_item
+-- desc: Gets the currently equipped item for the slot information provided
+---------------------------------------------------------------------------------------------------
 local function get_equipped_item(slotName, slotId)
 	if (slotId < 0) then
 		return nil;
@@ -50,6 +55,10 @@ local function get_equipped_item(slotName, slotId)
 	return windower.ffxi.get_items(equipment[string.format('%s_bag', slotName)], equipment[slotName]);
 end
 
+---------------------------------------------------------------------------------------------------
+-- func: update_equipment_textures
+-- desc: Updates the texture for all slots if it's a different piece of equipment
+---------------------------------------------------------------------------------------------------
 local function update_equipment_textures()
 	for key, value in pairs(texture_data) do
 		local item = get_equipped_item(value['slot_name'], value['slot_id']);
@@ -73,6 +82,10 @@ local function update_equipment_textures()
 	end
 end
 
+---------------------------------------------------------------------------------------------------
+-- func: update_equipment_slot_texture
+-- desc: Updates the texture for the given slot if it's a different piece of equipment
+---------------------------------------------------------------------------------------------------
 local function update_equipment_slot_texture(slotIndex)
 	for key, value in pairs(texture_data) do
 		if (value['slot_id'] == slotIndex) then
@@ -98,6 +111,10 @@ local function update_equipment_slot_texture(slotIndex)
 	end
 end
 
+---------------------------------------------------------------------------------------------------
+-- func: setup_textures
+-- desc: Sets up the primitive objects for our equipment
+---------------------------------------------------------------------------------------------------
 local function setup_textures()
 	-- loop through and create the primitive objects
 	-- 17 total objects. 1 background, 16 equipment slots
@@ -177,8 +194,6 @@ end);
 ---------------------------------------------------------------------------------------------------
 windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
 	if (id == 0x0050) then
-		--coroutine.schedule(update_equipment_textures, 1.0);
-		--update_equipment_textures();
 		local slot = original:unpack('c', 0x05 + 1);
 		update_equipment_slot_texture(slot);
 	end
@@ -190,10 +205,7 @@ end);
 ---------------------------------------------------------------------------------------------------
 
 windower.register_event('outgoing chunk', function(id, original, modified, injected, blocked)
-	if (id == 0x0050) then
-		--coroutine.schedule(update_equipment_textures, 1.0);
-		--update_equipment_textures();
-	end
+
 end);
 
 ---------------------------------------------------------------------------------------------------
