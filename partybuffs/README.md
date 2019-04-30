@@ -1,0 +1,2 @@
+# ffxi-addons/partybuffs  
+An addon made from https://github.com/KenshiDRK/Addons/tree/master/PartyBuffs for Ashita. Doesn't have the same whitelist/blacklist modes, but has ways to exclude certain buffs from being rendered.
