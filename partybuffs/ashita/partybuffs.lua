@@ -1,6 +1,6 @@
 _addon.author   = 'Project Tako';
 _addon.name     = 'PartyBuffs';
-_addon.version  = '1.0';
+_addon.version  = '1.1';
 
 require('common');
 require('d3d8');
@@ -8,17 +8,22 @@ require('d3d8');
 -- holds our config such as on screen position and if the primitive objects are locked
 local party_buffs =
 {
-	['resolution'] =
+	['show_distance'] = true,
+	['window'] =
 	{
-		['x'] = 1920,
-		['y'] = 1080
+		['x'] = 800,
+		['y'] = 600
 	},
-	['offset'] = 
+	['menu'] = 
 	{
-		['x'] = 180,
-		['y'] = 5
+		['x'] = 0,
+		['y'] = 0
 	},
-	['party_size_offset'] = { },
+	['scale'] = 
+	{
+		['x'] = 0,
+		['y'] = 0
+	},
 	['sprite'] = nil,
 	['size'] = 20,
 	['exclusions'] = { }
@@ -122,7 +127,26 @@ end
 -- desc: First called when our addon is loaded.
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('load', function()
-	-- create the sprite 
+	-- thanks tparty for letting me know these even existed.
+	-- read config
+	party_buffs['window']['x'] = AshitaCore:GetConfigurationManager():get_int32('boot_config', 'window_x', 800);
+	party_buffs['window']['y'] = AshitaCore:GetConfigurationManager():get_int32('boot_config', 'window_y', 600);
+	party_buffs['menu']['x'] = AshitaCore:GetConfigurationManager():get_int32('boot_config', 'menu_x', 0);
+	party_buffs['menu']['y'] = AshitaCore:GetConfigurationManager():get_int32('boot_config', 'menu_y', 0);
+
+	-- sanity checks
+	if (party_buffs['menu']['x'] <= 0) then
+		party_buffs['menu']['x'] = party_buffs['window']['x'];
+	end
+
+	if (party_buffs['menu']['y'] <= 0) then
+		party_buffs['menu']['y'] = party_buffs['window']['y'];
+	end
+
+	party_buffs['scale']['x'] = party_buffs['window']['x'] / party_buffs['menu']['x'];
+	party_buffs['scale']['y'] = party_buffs['window']['y'] / party_buffs['menu']['y'];
+
+	-- create the sprite that will hold the buff icons
 	local res, sprite = ashita.d3dx.CreateSprite();
 
 	-- if there's an error, get the error string and print
@@ -142,15 +166,22 @@ ashita.register_event('load', function()
 			party_data[id] =
 			{
 				['id'] = AshitaCore:GetDataManager():GetParty():GetMemberServerId(x),
-				['member_index'] = AshitaCore:GetDataManager():GetParty():GetMemberIndex(x),
 				['buffs'] = { }
 			};
 		end
-	end
 
-	-- figure out where the starting position is for when you have any number of party members
-	for x = 2, 6, 1 do
-		party_buffs['party_size_offset'][x] = (party_buffs['resolution']['y'] - party_buffs['offset']['y']) - (20 * x);
+		-- create font object for this members distance
+		local f = AshitaCore:GetFontManager():Create(string.format('__party_buffs_addon_%d', x));
+		f:SetColor(0xFFFFFFFF);
+	    f:SetFontFamily('Comic Sans MS');
+	    f:SetFontHeight(8 * party_buffs['scale']['y']);
+	    f:SetBold(true);
+	    f:SetRightJustified(true);
+	    f:SetPositionX(0);
+	    f:SetPositionY(0);
+	    f:SetText('0.0');
+	    f:SetLocked(true);
+	    f:SetVisibility(true);
 	end
 
 	-- load exclusions if the file exists
@@ -189,34 +220,41 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		end
 	-- party update packet
 	elseif (id == 0xDD) then
-		local server_id = struct.unpack('I', packet, 0x04 + 1);
-		local member_number = struct.unpack('b', packet, 0x1A + 1);
-		if (party_data[server_id] == nil or party_data[server_id]['member_index'] ~= member_number) then
-			party_data[server_id] = 
-			{
-				['id'] = server_id,
-				['member_index'] = member_number,
-				['buffs'] = { }
-			};
+		party_data = { };
+		-- create default party_data table
+		for x = 1, 5, 1 do
+			-- look up id and add defaults to table
+			local server_id = AshitaCore:GetDataManager():GetParty():GetMemberServerId(x);
+			if (server_id ~= 0) then
+				party_data[server_id] =
+				{
+					['id'] = server_id,
+					['buffs'] = { }
+				};
+			end
+
+			local f = AshitaCore:GetFontManager():Create(string.format('__party_buffs_addon_%d', x));
+			f:SetVisibility(false);
 		end
 	-- party effects packet
 	elseif (id == 0x76) then
 		-- loop through the packet and read buff data
 		for x = 0, 4, 1 do
+			-- get party members server id, and make sure we have data for them
 			local server_id = struct.unpack('I', packet, x * 0x30 + 0x04 + 1);
-			if (party_data[server_id]) then
+			if (party_data[server_id] ~= nil) then
 				party_data[server_id]['buffs'] = { };
 				for i = 0, 31, 1 do
 					local mask = bit.band(bit.rshift(struct.unpack('b', packet, bit.rshift(i, 2) + (x * 0x30 + 0x0C) + 1), 2 * (i % 4)), 3);
 					if (struct.unpack('b', packet, (x * 0x30 + 0x14) + i + 1) ~= -1 or mask > 0) then
 						local buffId = bit.bor(struct.unpack('B', packet, (x * 0x30 + 0x14) + i + 1), bit.lshift(mask, 8));
-						if (buffId > 1) then
+						if (buffId ~= nil and buffId > 1) then
 							party_data[server_id]['buffs'][i] = buffId;
 						end
 					end
 				end
 
-				table.sort(party_data[server_id]['buffs']);
+				--table.sort(party_data[server_id]['buffs']);
 			end
 		end
 
@@ -249,21 +287,28 @@ ashita.register_event('render', function()
         return;
     end
 
+    local player_zone = AshitaCore:GetDataManager():GetParty():GetMemberZone(0);
+
     -- make sure we are actually in a party
     if (AshitaCore:GetDataManager():GetParty():GetAllianceParty0MemberCount() > 1) then
 	    -- offests to know where to render the next buff icon
-	    local xoffset = 0;
-	    local yoffset = party_buffs['party_size_offset'][AshitaCore:GetDataManager():GetParty():GetAllianceParty0MemberCount()];
+	    
+	    --local yoffset = party_buffs['party_size_offset'][AshitaCore:GetDataManager():GetParty():GetAllianceParty0MemberCount()];
+	    local posx = party_buffs['window']['x'] - (171 * party_buffs['scale']['x']);
+	    local posy = party_buffs['window']['y'] - (40 * party_buffs['scale']['y']);
 
 	    -- loop and render
 	    party_buffs['sprite']:Begin();
 
-	    for k, v in pairs(textures) do
-	    	if (AshitaCore:GetDataManager():GetParty():GetMemberActive(k) == 1) then
-		    	for key, value in pairs(v) do
-			    	-- create a rectangle 
-			    	-- size is equal to value in the settings/size valeu
-			    	local rect = RECT();
+	    for x = 1, 5, 1 do
+	    	local xoffset = 0;
+	    	local f = AshitaCore:GetFontManager():Get(string.format('__party_buffs_addon_%d', x));
+
+	    	if (player_zone ~= AshitaCore:GetDataManager():GetParty():GetMemberZone(x) or AshitaCore:GetDataManager():GetParty():GetMemberActive(x) == 0) then
+	    		f:SetVisibility(false);
+	    	else
+	    		for key, value in pairs(textures[x]) do
+	    			local rect = RECT();
 			    	rect.left = 0;
 			    	rect.top = 0;
 			    	rect.right = party_buffs['size'];
@@ -275,18 +320,27 @@ ashita.register_event('render', function()
 			    	-- render the buff icon texture, we have to manually keep track of the offset here
 			    	if (value['texture'] ~= nil) then
 			    		-- draw 
-			    		local xpos = ((party_buffs['resolution']['x'] - party_buffs['offset']['x']) - xoffset);
-			    		local ypos = yoffset + ((k - 1) * 20);
+			    		local xpos = posx - xoffset;
+			    		local ypos = posy - ((AshitaCore:GetDataManager():GetParty():GetAllianceParty0MemberCount() - 1 - x) * (20 * party_buffs['scale']['y']));
 			    		party_buffs['sprite']:Draw(value['texture']:Get(), rect, nil, nil, 0.0, D3DXVECTOR2(xpos, ypos), color);
 
 			    		-- adjust offset
 			    		xoffset = xoffset + party_buffs['size'];
 			    	end
+	    		end
 
-			    end
-		    end
+	    		if (party_buffs['show_distance']) then
+		    		local distance = AshitaCore:GetDataManager():GetEntity():GetDistance(AshitaCore:GetDataManager():GetParty():GetMemberTargetIndex(x));
+		    		f:SetPositionX(posx - xoffset + 10);
+		    		f:SetPositionY(posy - ((AshitaCore:GetDataManager():GetParty():GetAllianceParty0MemberCount() - 1 - x) * (20 * party_buffs['scale']['y'])));
+		    		f:SetText(string.format(string.format('%.1f', math.sqrt(distance))));
+	            	f:SetVisibility(true);
+	            else
+	            	f:SetVisibility(false);
+	            end
 
-		    xoffset = 0;
+	            xoffset = xoffset + party_buffs['size'];
+	    	end
 	    end
 
 	    party_buffs['sprite']:End();
@@ -299,6 +353,9 @@ end);
 ---------------------------------------------------------------------------------------------------
 ashita.register_event('unload', function()
 	-- clean up
+	for x = 1, 5, 1 do
+		AshitaCore:GetFontManager():Delete(string.format('__party_buffs_addon_%d', x));
+	end
 	for key, value in pairs(textures) do
 		if (value ~= nil and value['texture'] ~= nil) then
 			value['texture']:Release();
