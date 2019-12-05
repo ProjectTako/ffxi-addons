@@ -172,6 +172,9 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 		entity_array = { };
 		tracked_entites = { };
 		scanning_entites = { };
+
+		--imgui_variables['var_TrackMobs_InputMobName'][1] = '';
+		imgui.SetVarValue(imgui_variables['var_TrackMobs_InputMobName'][1], '');
 	end
 	-- npc or player entity update
 	if (id == 0x0D or id == 0x0E) then
