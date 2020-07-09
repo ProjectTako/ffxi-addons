@@ -46,39 +46,45 @@ local function find_mob_by_name(name_to_find)
 		local dat = dats[zone_id];
 		-- make sure we have a valid dat file path
 		if (dat ~= nil) then
-			-- open the dat file
-			local file = io.open(string.format('%s\\..\\FINAL FANTASY XI\\%s', ashita.file.get_install_dir(), dat), 'rb');
-			-- verify we have a valid file handle
-			if (file ~= nil) then
-				-- lazy way of doing it, we will break when we don't read any more data
-				while (true) do
-					-- read data. each entry is 32 bytes long
-					-- 28 bytes = name. 4 bytes = server id. server id & 0xFFF = target index
-					local data = file:read(32);
-					-- if this is true, it's generally because we're at the end of the file
-					if (data == nil) then
-						break;
-					end
+			if (type(dat) ~= 'table') then
+				return { };
+			end
 
-					-- lets attempt to read the entities name from the dat file
-					local name = '';
-					for x = 1, 28, 1 do
-						-- read the character at the position in the string
-						local t = struct.unpack('c', data, x);
-						-- check to make sure it's not a terminating/null char
-						if (t ~= '\0') then
-							-- valid char, append
-							name = name .. t;
+			for datNum = 1, #dat, 1 do
+				-- open the dat file
+				local file = io.open(string.format('%s\\..\\FINAL FANTASY XI\\%s', ashita.file.get_install_dir(), dat[datNum]), 'rb');
+				-- verify we have a valid file handle
+				if (file ~= nil) then
+					-- lazy way of doing it, we will break when we don't read any more data
+					while (true) do
+						-- read data. each entry is 32 bytes long
+						-- 28 bytes = name. 4 bytes = server id. server id & 0xFFF = target index
+						local data = file:read(32);
+						-- if this is true, it's generally because we're at the end of the file
+						if (data == nil) then
+							break;
 						end
-					end
 
-					-- unpack the id, which always starts at the same position
-					local id = struct.unpack('I', data, 29);	
+						-- lets attempt to read the entities name from the dat file
+						local name = '';
+						for x = 1, 28, 1 do
+							-- read the character at the position in the string
+							local t = struct.unpack('c', data, x);
+							-- check to make sure it's not a terminating/null char
+							if (t ~= '\0') then
+								-- valid char, append
+								name = name .. t;
+							end
+						end
 
-					-- check to see if the name of the entity in the dat contains the name we're looking for
-					if (name:lower():contains(name_to_find:lower())) then
-						-- add it to our results table 
-						results[#results + 1] = { name = name, id = id, index = bit.band(id, 0xFFF) };
+						-- unpack the id, which always starts at the same position
+						local id = struct.unpack('I', data, 29);
+
+						-- check to see if the name of the entity in the dat contains the name we're looking for
+						if (name:lower():contains(name_to_find:lower())) then
+							-- add it to our results table 
+							results[#results + 1] = { name = name, id = id, index = bit.band(id, 0xFFF) };
+						end
 					end
 				end
 			end
@@ -179,15 +185,15 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 	-- npc or player entity update
 	if (id == 0x0D or id == 0x0E) then
 		-- read data that is always there
-		local id = struct.unpack('I', packet, 0x04 + 1);
+		local target_id = struct.unpack('I', packet, 0x04 + 1);
 		local target_index = struct.unpack('h', packet, 0x08 + 1);
 		local updatemask = struct.unpack('b', packet, 0x0A + 1);
 
 		-- check to make sure we have something in this table for the mob, if not, put defaults
-		if (entity_array[id] == nil) then
-			entity_array[id] = 
+		if (entity_array[target_id] == nil) then
+			entity_array[target_id] = 
 			{ 
-				['id'] = id, 
+				['id'] = target_id, 
 				['index'] = index, 
 				['name'] = '', 
 				['position'] = 
@@ -217,14 +223,14 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 			if (bit.band(updatemask, 0x01) == 0x01) then
 				x, z, y = struct.unpack('fff', packet, 0x0C + 1);
 
-				entity_array[id]['position'] = { ['x'] = x, ['z'] = z, ['y']  = y };
+				entity_array[target_id]['position'] = { ['x'] = x, ['z'] = z, ['y']  = y };
 			end
 
 			if (bit.band(updatemask, 0x04) == 0x04) then
 				hpp, animation, status = struct.unpack('bbb', packet, 0x1E + 1);
-				entity_array[id]['hpp'] = hpp;
-				entity_array[id]['animation'] = animation;
-				entity_array[id]['status'] = status;
+				entity_array[target_id]['hpp'] = hpp;
+				entity_array[target_id]['animation'] = animation;
+				entity_array[target_id]['status'] = status;
 			end
 
 			-- 0x08 = UPDATE_NAME
@@ -235,7 +241,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 						name = name .. t;
 					end
 
-					entity_array[id]['name'] = name;
+					entity_array[target_id]['name'] = name;
 				end
 			end
 		end
@@ -245,8 +251,8 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 				manual_scan['scanning'] = false;
 				manual_scan['index'] = 0;
 
-				if (id ~= 0) then
-					print(string.format('[ScanZone]Found Entity: %d (0x%X)', id, id));
+				if (target_id ~= 0) then
+					print(string.format('[ScanZone]Found Entity: %d (0x%X)', target_id, target_id));
 				end
 
 				if (name ~= nil and name ~= '') then
