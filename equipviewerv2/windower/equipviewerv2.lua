@@ -70,7 +70,7 @@ local function update_equipment_textures()
 				value['item_id'] = 0;
 			elseif (value['item_id'] == 0 or value['item_id'] ~= item['id']) then
 				value['item_id'] = item['id'];
-				local icon_path = string.format('%sicons/%d.png', windower.addon_path, value['item_id']);
+				local icon_path = string.format('%sicons/%s/%d.png', windower.addon_path, default_settings['size'], value['item_id']);
 				if (windower.file_exists(icon_path)) then
 					value['primitive']:path(icon_path);
 					value['primitive']:transparency(0);
@@ -97,7 +97,7 @@ local function update_equipment_slot_texture(slotIndex)
 					value['item_id'] = 0;
 				elseif (value['item_id'] == 0 or value['item_id'] ~= item['id']) then
 					value['item_id'] = item['id'];
-					local icon_path = string.format('%sicons/%d.png', windower.addon_path, value['item_id']);
+					local icon_path = string.format('%sicons/%s/%d.png', windower.addon_path, default_settings['size'], value['item_id']);
 					if (windower.file_exists(icon_path)) then
 						value['primitive']:path(icon_path);
 						value['primitive']:transparency(0);
