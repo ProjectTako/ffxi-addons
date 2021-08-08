@@ -4,6 +4,9 @@ Overlays your currently equipped items onto the screen anywhere. Basically just 
   
 Commands:  
 equipviewer pos[ition] x y - Moves the equipment overlay to the desired location.  
+equipviewer opacity number - sets the opacity of the font object. 0 = transparent, 1 = opaque.
+equipviewer scale number - sets the scale of the icons and background, deftault = 1.0
+equipviewer showammo - toggles it showing ammo count when the ammo amount > 1
   
 To use:  
 The addon uses a dependency injection model to allow the core logic and work to be in a shared file that both the Windower and Ashita version uses. This allows any major changes that happen to be done in a single file without having to update a version for both applications.  
