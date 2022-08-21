@@ -2,8 +2,8 @@
 ScanZone:  
 Scan Zone is an addon that will let you scan your current zone for any NPC, including mobs. This will make the server send your client an entity update packet, which it then reads for certain data and displays in the chat log, such as name, id, and position. 
 
-Note:
-Windower users MUST edit scanzone.lua to point to their FFXI install directory (line 32).
+Note:  
+Windower users MUST edit scanzone.lua to point to their FFXI install directory (line 32).  
 Ashita users do not need to do this step.
   
 Commands:  
