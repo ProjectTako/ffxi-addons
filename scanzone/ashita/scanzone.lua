@@ -194,7 +194,7 @@ ashita.register_event('incoming_packet', function(id, size, packet)
 			entity_array[target_id] = 
 			{ 
 				['id'] = target_id, 
-				['index'] = index, 
+				['index'] = target_index, 
 				['name'] = '', 
 				['position'] = 
 				{
