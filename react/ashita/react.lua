@@ -251,7 +251,7 @@ function process_reaction(reaction, action_name, actor, target)
 	if (reaction ~= nil) then
 		local player = GetPlayerEntity();
 
-		if (reaction == 'turnaround' or reaction == 'turnaround') then
+		if (reaction == 'turnaround' or reaction == 'facemob') then
 			local angle = (math.atan2((actor['Movement']['LocalPosition']['Z'] - player['Movement']['LocalPosition']['Z']), (actor['Movement']['LocalPosition']['X'] - player['Movement']['LocalPosition']['X'])) * 180 / math.pi) * -1.0;
 			if (reaction == 'turnaround') then
 				angle = angle + 180;
